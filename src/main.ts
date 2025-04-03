@@ -7,7 +7,7 @@ import { UIController } from './ui-controller'
 document.addEventListener('DOMContentLoaded', () => {
     const ui = new UIController()
     const entropyCropper = new EntropyCropper()
-    const pdfProcessor = new PDFProcessor(entropyCropper)
+    const pdfProcessor = new PDFProcessor()
     
     // Initialize the application with UI controller and PDF processor
     init(ui, pdfProcessor, entropyCropper)

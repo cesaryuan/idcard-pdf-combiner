@@ -163,8 +163,8 @@ export class UIController {
     
     /**
      * Update the front and back image previews
-     * @param {HTMLCanvasElement} frontCanvas - The cropped front image canvas
-     * @param {HTMLCanvasElement} backCanvas - The cropped back image canvas
+     * @param {HTMLImageElement} frontImage - The cropped front image canvas
+     * @param {HTMLImageElement} backImage - The cropped back image canvas
      */
     updateImagePreviews(frontImage: HTMLImageElement, backImage: HTMLImageElement): void {
         if (this.frontPreview) {
@@ -186,8 +186,8 @@ export class UIController {
     
     /**
      * Update the combined preview showing both images on A4
-     * @param {HTMLCanvasElement} frontCanvas - The cropped front image canvas
-     * @param {HTMLCanvasElement} backCanvas - The cropped back image canvas
+     * @param {HTMLImageElement} frontImage - The cropped front image canvas
+     * @param {HTMLImageElement} backImage - The cropped back image canvas
      * @param {number} frontOffset - Vertical position of front image (0-50%)
      * @param {number} backOffset - Vertical position of back image (50-100%)
      */
@@ -260,7 +260,7 @@ export class UIController {
      * @param {StatusType} type - The type of message ('info', 'success', 'error')
      * @param {boolean} loading - Whether to show loading spinner
      */
-    showStatus(message: string, type: StatusType, loading = false): void {
+    showStatus(message: string, type: StatusType, loading: boolean = false): void {
         if (!this.uploadStatus) return;
         
         this.uploadStatus.className = 'mt-2 text-sm';

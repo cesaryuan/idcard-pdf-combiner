@@ -3,7 +3,6 @@
  * Handles PDF loading, image extraction, and PDF generation
  */
 
-import { EntropyCropper } from './entropy-crop';
 import * as pdfjsLib from 'pdfjs-dist';
 import { jsPDF } from 'jspdf';
 
@@ -27,7 +26,6 @@ type CroppedImages = {
 };
 
 export class PDFProcessor {
-    private entropyCropper: EntropyCropper;
     private frontImage: HTMLImageElement | null = null;
     private backImage: HTMLImageElement | null = null;
     private croppedFront: HTMLImageElement | null = null;
@@ -40,10 +38,8 @@ export class PDFProcessor {
     
     /**
      * Create a PDF processor
-     * @param {EntropyCropper} entropyCropper - The entropy cropper instance
      */
-    constructor(entropyCropper: EntropyCropper) {
-        this.entropyCropper = entropyCropper;
+    constructor() {
     }
     
     /**
@@ -192,8 +188,8 @@ export class PDFProcessor {
     
     /**
      * Set the cropped images
-     * @param {HTMLCanvasElement} croppedFront - The cropped front image
-     * @param {HTMLCanvasElement} croppedBack - The cropped back image
+     * @param croppedFront - The cropped front image
+     * @param croppedBack - The cropped back image
      */
     setCroppedImages(croppedFront: HTMLImageElement, croppedBack: HTMLImageElement): void {
         this.croppedFront = croppedFront;
@@ -225,8 +221,8 @@ export class PDFProcessor {
     
     /**
      * Generate a PDF with the cropped images
-     * @param {HTMLCanvasElement} frontCanvas - The cropped front image canvas
-     * @param {HTMLCanvasElement} backCanvas - The cropped back image canvas
+     * @param {HTMLImageElement} frontImage - The cropped front image canvas
+     * @param {HTMLImageElement} backImage - The cropped back image canvas
      * @param {number} frontOffset - Vertical position of front image (0-50%)
      * @param {number} backOffset - Vertical position of back image (50-100%)
      * @return {string} URL for the generated PDF

@@ -64,9 +64,6 @@ export class EntropyCropper {
         if (this.ctx) {
             this.ctx.drawImage(image, 0, 0, width, height);
             
-            // Get image data
-            const imageData = this.ctx.getImageData(0, 0, width, height);
-            
             // Calculate entropy for rows and columns
             const rowEntropy = new Array(height).fill(0);
             const colEntropy = new Array(width).fill(0);
