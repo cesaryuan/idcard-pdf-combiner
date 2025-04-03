@@ -4,6 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ID Card PDF Merger</title>
+    <style>
+        /* Custom styling for the details/summary arrow */
+        details > summary {
+            list-style: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        details > summary::before {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /%3E%3C/svg%3E");
+            transition: transform 0.2s ease;
+        }
+        
+        details[open] > summary::before {
+            transform: rotate(180deg);
+        }
+
+        /* Custom shadow styling for details element */
+        details.settings-panel {
+            box-shadow: 0 0px 0px rgba(0, 0, 0, 0), 0 0px 4px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s ease;
+        }
+        
+        details.settings-panel:hover {
+            box-shadow: 0 0px 0px rgba(0, 0, 0, 0), 0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+    </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
     <div class="container mx-auto p-4">
@@ -28,50 +60,53 @@
                 <div id="uploadStatus" class="mt-2 text-sm hidden"></div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                    <h2 class="text-xl font-semibold mb-4">Entropy Cropping Settings</h2>
-                    <div class="space-y-3">
-                        <div>
-                            <label for="threshold" class="block text-sm font-medium text-gray-700">Threshold</label>
-                            <input type="range" id="threshold" min="0" max="1" step="0.01" value="0.5" class="w-full">
-                            <div class="flex justify-between text-xs text-gray-500">
-                                <span>0</span>
-                                <span>0.5</span>
-                                <span>1</span>
+            <details class="mb-6 bg-white rounded-md settings-panel overflow-hidden">
+                <summary class="px-4 py-3 text-xl font-semibold cursor-pointer focus:outline-none">Settings</summary>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 border-t border-gray-200">
+                    <div>
+                        <h3 class="text-lg font-medium mb-3">Entropy Cropping Settings</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label for="threshold" class="block text-sm font-medium text-gray-700">Threshold</label>
+                                <input type="range" id="threshold" min="0" max="1" step="0.01" value="0.5" class="w-full">
+                                <div class="flex justify-between text-xs text-gray-500">
+                                    <span>0</span>
+                                    <span>0.5</span>
+                                    <span>1</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="padding" class="block text-sm font-medium text-gray-700">Padding (px)</label>
+                                <input type="number" id="padding" min="0" max="100" value="5" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                             </div>
                         </div>
-                        <div>
-                            <label for="padding" class="block text-sm font-medium text-gray-700">Padding (px)</label>
-                            <input type="number" id="padding" min="0" max="100" value="5" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                        </div>
                     </div>
-                </div>
 
-                <div>
-                    <h2 class="text-xl font-semibold mb-4">Placement Settings</h2>
-                    <div class="space-y-3">
-                        <div>
-                            <label for="frontOffset" class="block text-sm font-medium text-gray-700">Front ID Vertical Offset (%)</label>
-                            <input type="range" id="frontOffset" min="0" max="50" value="30" class="w-full">
-                            <div class="flex justify-between text-xs text-gray-500">
-                                <span>0% (Top)</span>
-                                <span>25%</span>
-                                <span>50% (Center)</span>
+                    <div>
+                        <h3 class="text-lg font-medium mb-3">Placement Settings</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label for="frontOffset" class="block text-sm font-medium text-gray-700">Front ID Vertical Offset (%)</label>
+                                <input type="range" id="frontOffset" min="0" max="50" value="30" class="w-full">
+                                <div class="flex justify-between text-xs text-gray-500">
+                                    <span>0% (Top)</span>
+                                    <span>25%</span>
+                                    <span>50% (Center)</span>
+                                </div>
                             </div>
-                        </div>
-                        <div>
-                            <label for="backOffset" class="block text-sm font-medium text-gray-700">Back ID Vertical Offset (%)</label>
-                            <input type="range" id="backOffset" min="50" max="100" value="70" class="w-full">
-                            <div class="flex justify-between text-xs text-gray-500">
-                                <span>50% (Center)</span>
-                                <span>75%</span>
-                                <span>100% (Bottom)</span>
+                            <div>
+                                <label for="backOffset" class="block text-sm font-medium text-gray-700">Back ID Vertical Offset (%)</label>
+                                <input type="range" id="backOffset" min="50" max="100" value="70" class="w-full">
+                                <div class="flex justify-between text-xs text-gray-500">
+                                    <span>50% (Center)</span>
+                                    <span>75%</span>
+                                    <span>100% (Bottom)</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </details>
 
             <div class="mb-6">
                 <h2 class="text-xl font-semibold mb-4">Preview</h2>
