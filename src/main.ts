@@ -96,8 +96,9 @@ function init(ui: UIController, pdfProcessor: PDFProcessor, entropyCropper: Entr
             // Generate PDF
             const outputUrl = pdfProcessor.generatePdf(croppedFront, croppedBack, frontOffset, backOffset)
             
-            // Update download button
-            ui.setupDownloadButton(outputUrl)
+            // Auto download PDF
+            // ui.setupDownloadButton(outputUrl)
+            ui.downloadPdf(outputUrl)
             ui.showStatus('PDF generated successfully.', 'success')
         } catch (error) {
             console.error('Error generating PDF:', error)

@@ -287,6 +287,20 @@ export class UIController {
     }
     
     /**
+     * Automatically download the PDF
+     * @param {string} pdfUrl - The URL for the generated PDF
+     */
+    downloadPdf(pdfUrl: string): void {
+        // Create a temporary anchor element
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        link.download = 'ID_Card_Combined.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    
+    /**
      * Show status message
      * @param {string} message - The message to display
      * @param {StatusType} type - The type of message ('info', 'success', 'error')
