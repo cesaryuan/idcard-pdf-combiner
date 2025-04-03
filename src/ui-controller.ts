@@ -30,6 +30,10 @@ export class UIController {
     private a4Width = 8.27;
     private a4Height = 11.69;
     
+    // Default debounce timeout (ms)
+    private debounceTimeout = 300;
+    private debounceTimers: Record<string, number> = {};
+    
     constructor() {
         // DOM Elements
         this.dropzone = document.getElementById('dropzone');
@@ -44,6 +48,26 @@ export class UIController {
         this.paddingInput = document.getElementById('padding') as HTMLInputElement;
         this.frontOffsetInput = document.getElementById('frontOffset') as HTMLInputElement;
         this.backOffsetInput = document.getElementById('backOffset') as HTMLInputElement;
+    }
+    
+    /**
+     * Helper function to debounce function calls
+     * @param {Function} fn - The function to debounce
+     * @param {string} id - Identifier for this debounce instance
+     * @param {number} timeout - Debounce timeout in milliseconds
+     * @returns {Function} The debounced function
+     */
+    private debounce(fn: () => void, id: string, timeout: number = this.debounceTimeout): void {
+        // Clear the existing timer if there is one
+        if (this.debounceTimers[id]) {
+            window.clearTimeout(this.debounceTimers[id]);
+        }
+        
+        // Set a new timer
+        this.debounceTimers[id] = window.setTimeout(() => {
+            fn();
+            delete this.debounceTimers[id];
+        }, timeout);
     }
     
     /**
@@ -98,19 +122,27 @@ export class UIController {
         
         // Settings change listeners
         if (this.thresholdInput) {
-            this.thresholdInput.addEventListener('input', () => handlePreviewUpdate());
+            this.thresholdInput.addEventListener('input', () => {
+                this.debounce(handlePreviewUpdate, 'threshold');
+            });
         }
         
         if (this.paddingInput) {
-            this.paddingInput.addEventListener('input', () => handlePreviewUpdate());
+            this.paddingInput.addEventListener('input', () => {
+                this.debounce(handlePreviewUpdate, 'padding');
+            });
         }
         
         if (this.frontOffsetInput) {
-            this.frontOffsetInput.addEventListener('input', () => handlePreviewUpdate());
+            this.frontOffsetInput.addEventListener('input', () => {
+                this.debounce(handlePreviewUpdate, 'frontOffset');
+            });
         }
         
         if (this.backOffsetInput) {
-            this.backOffsetInput.addEventListener('input', () => handlePreviewUpdate());
+            this.backOffsetInput.addEventListener('input', () => {
+                this.debounce(handlePreviewUpdate, 'backOffset');
+            });
         }
         
         // Generate PDF button listener
