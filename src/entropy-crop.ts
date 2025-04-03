@@ -52,7 +52,7 @@ export class EntropyCropper {
      * @param {number} threshold - Threshold value (0-1) for determining crop boundaries
      * @return {Object} - The crop region with x, y, width, height
      */
-    findCropRegion(image: HTMLImageElement, threshold = 0.5): { x: number; y: number; width: number; height: number } {
+    findCropRegion(image: HTMLImageElement, threshold: number = 0.5): { x: number; y: number; width: number; height: number } {
         const width = image.naturalWidth;
         const height = image.naturalHeight;
         
@@ -147,9 +147,9 @@ export class EntropyCropper {
      * @param {HTMLImageElement} image - The image to crop
      * @param {number} threshold - Threshold value (0-1) for determining crop boundaries
      * @param {number} padding - Padding to add around the crop region
-     * @return {HTMLCanvasElement} - Canvas containing the cropped image
+     * @return {HTMLImageElement} - Image containing the cropped image
      */
-    cropImage(image: HTMLImageElement, threshold = 0.5, padding = 10): HTMLImageElement {
+    cropImage(image: HTMLImageElement, threshold: number = 0.5, padding: number = 10): HTMLImageElement {
         // Find crop region
         const region = this.findCropRegion(image, threshold);
         
