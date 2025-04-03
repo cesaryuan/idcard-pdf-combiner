@@ -181,7 +181,7 @@ export class UIController {
      */
     getSettings(): Settings {
         const threshold = parseFloat(this.thresholdInput ? this.thresholdInput.value : '0.5');
-        const padding = parseInt(this.paddingInput ? this.paddingInput.value : '10', 10);
+        const padding = parseInt(this.paddingInput ? this.paddingInput.value : '5', 10);
         const frontOffset = parseInt(this.frontOffsetInput ? this.frontOffsetInput.value : '30', 10);
         const backOffset = parseInt(this.backOffsetInput ? this.backOffsetInput.value : '70', 10);
         
