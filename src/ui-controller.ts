@@ -2,6 +2,7 @@
  * UI Controller for ID Card PDF Merger
  * Handles all UI-related functionality and DOM interactions
  */
+import i18n from './i18n';
 
 type StatusType = 'info' | 'success' | 'error';
 type Settings = {
@@ -48,6 +49,44 @@ export class UIController {
         this.paddingInput = document.getElementById('padding') as HTMLInputElement;
         this.frontOffsetInput = document.getElementById('frontOffset') as HTMLInputElement;
         this.backOffsetInput = document.getElementById('backOffset') as HTMLInputElement;
+        
+        // Initialize the translations
+        this.initializeTranslations();
+    }
+    
+    /**
+     * Initialize translations for the UI
+     */
+    private initializeTranslations(): void {
+        // Update the document title
+        document.title = i18n.t('app_title');
+        
+        // Apply translations to all elements with data-i18n attribute
+        this.updateTranslations();
+        
+        // Add translation change event listener
+        i18n.on('languageChanged', () => {
+            this.updateTranslations();
+        });
+    }
+    
+    /**
+     * Update all translations in the UI
+     */
+    private updateTranslations(): void {
+        document.title = i18n.t('app_title');
+        
+        const elements = document.querySelectorAll('[data-i18n]');
+        elements.forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (key) {
+                if (el.tagName === 'INPUT' && (el as HTMLInputElement).placeholder) {
+                    (el as HTMLInputElement).placeholder = i18n.t(key);
+                } else {
+                    el.textContent = i18n.t(key);
+                }
+            }
+        });
     }
     
     /**
@@ -301,30 +340,60 @@ export class UIController {
     }
     
     /**
-     * Show status message
+     * Show a status message to the user
      * @param {string} message - The message to display
-     * @param {StatusType} type - The type of message ('info', 'success', 'error')
-     * @param {boolean} loading - Whether to show loading spinner
+     * @param {StatusType} type - The type of status message (info, success, error)
+     * @param {boolean} isLoading - Whether this is a loading message
      */
-    showStatus(message: string, type: StatusType, loading: boolean = false): void {
+    showStatus(message: string, type: StatusType = 'info', isLoading: boolean = false): void {
+        // Translate status messages if they match keys
+        let translatedMessage = message;
+        
+        // Handle status messages with error interpolation
+        if (message.includes('Failed to process PDF:')) {
+            const error = message.replace('Failed to process PDF:', '').trim();
+            translatedMessage = i18n.t('status_failed_process', { error });
+        } else {
+            // Try to find a direct translation key
+            const statusKeys = [
+                'status_loading_pdf',
+                'status_pdf_processed',
+                'status_failed_preview',
+                'status_generating_pdf',
+                'status_pdf_generated',
+                'status_failed_generation',
+                'status_upload_pdf'
+            ];
+            
+            for (const key of statusKeys) {
+                if (message === i18n.t(key, { lng: 'en' })) {
+                    translatedMessage = i18n.t(key);
+                    break;
+                }
+            }
+        }
+        
         if (!this.uploadStatus) return;
         
-        this.uploadStatus.className = 'mt-2 text-sm';
-        this.uploadStatus.classList.add(`status-${type}`);
+        this.uploadStatus.textContent = translatedMessage;
+        this.uploadStatus.className = `mt-2 text-sm ${type === 'error' ? 'text-red-500' : type === 'success' ? 'text-green-500' : 'text-blue-500'}`;
         
-        this.uploadStatus.innerHTML = loading 
-            ? `<span class="spinner"></span>${message}` 
-            : message;
+        if (isLoading) {
+            // Add a loading indicator or animation here if needed
+            this.uploadStatus.classList.add('loading');
+        } else {
+            this.uploadStatus.classList.remove('loading');
+        }
         
         this.uploadStatus.classList.remove('hidden');
         
-        // Auto-hide success messages after 5 seconds
+        // Hide the status after a delay for success messages
         if (type === 'success') {
             setTimeout(() => {
                 if (this.uploadStatus) {
                     this.uploadStatus.classList.add('hidden');
                 }
-            }, 5000);
+            }, 3000);
         }
     }
 } 

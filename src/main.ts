@@ -1,4 +1,5 @@
 import './style.css'
+import './i18n' // Import i18n configuration
 import { EntropyCropper } from './entropy-crop'
 import { PDFProcessor } from './pdf-processor'
 import { UIController } from './ui-controller'
@@ -8,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ui = new UIController()
     const entropyCropper = new EntropyCropper()
     const pdfProcessor = new PDFProcessor()
-    
+        
     // Initialize the application with UI controller and PDF processor
     init(ui, pdfProcessor, entropyCropper)
 })

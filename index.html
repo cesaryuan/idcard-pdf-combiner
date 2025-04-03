@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ID Card PDF Merger</title>
+    <title data-i18n="app_title">ID Card PDF Merger</title>
     <style>
         /* Custom styling for the details/summary arrow */
         details > summary {
@@ -40,34 +40,34 @@
 <body class="bg-gray-100 min-h-screen">
     <div class="container mx-auto p-4">
         <header class="mb-8">
-            <h1 class="text-3xl font-bold text-center text-gray-800">ID Card PDF Merger</h1>
-            <p class="text-center text-gray-600">Merge front and back ID card PDF pages into a single document</p>
+            <h1 class="text-3xl font-bold text-center text-gray-800" data-i18n="app_title">ID Card PDF Merger</h1>
+            <p class="text-center text-gray-600" data-i18n="app_description">Merge front and back ID card PDF pages into a single document</p>
         </header>
 
         <main class="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto">
             <div class="mb-6">
-                <h2 class="text-xl font-semibold mb-4">Upload PDF</h2>
+                <h2 class="text-xl font-semibold mb-4" data-i18n="upload_title">Upload PDF</h2>
                 <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center" id="dropzone">
                     <input type="file" id="pdfInput" accept=".pdf" class="hidden">
                     <label for="pdfInput" class="cursor-pointer">
                         <!-- <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
                             <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4h-8m-12 0H8m12 0a4 4 0 01-4-4v-4m4 4h12a4 4 0 004-4v-4m-4 4h-8" stroke-width="2" stroke-linecap="round"></path>
                         </svg> -->
-                        <p class="mt-2 text-sm text-gray-600">Click to upload or drag and drop</p>
-                        <p class="mt-1 text-xs text-gray-500">PDF with ID card front and back (2 pages)</p>
+                        <p class="mt-2 text-sm text-gray-600" data-i18n="upload_instructions">Click to upload or drag and drop</p>
+                        <p class="mt-1 text-xs text-gray-500" data-i18n="upload_description">PDF with ID card front and back (2 pages)</p>
                     </label>
                 </div>
                 <div id="uploadStatus" class="mt-2 text-sm hidden"></div>
             </div>
 
             <details class="mb-6 bg-white rounded-md settings-panel overflow-hidden">
-                <summary class="px-4 py-3 text-xl font-semibold cursor-pointer focus:outline-none">Settings</summary>
+                <summary class="px-4 py-3 text-xl font-semibold cursor-pointer focus:outline-none" data-i18n="settings_title">Settings</summary>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 border-t border-gray-200">
                     <div>
-                        <h3 class="text-lg font-medium mb-3">Entropy Cropping Settings</h3>
+                        <h3 class="text-lg font-medium mb-3" data-i18n="entropy_section_title">Entropy Cropping Settings</h3>
                         <div class="space-y-3">
                             <div>
-                                <label for="threshold" class="block text-sm font-medium text-gray-700">Threshold</label>
+                                <label for="threshold" class="block text-sm font-medium text-gray-700" data-i18n="threshold_label">Threshold</label>
                                 <input type="range" id="threshold" min="0" max="1" step="0.01" value="0.5" class="w-full">
                                 <div class="flex justify-between text-xs text-gray-500">
                                     <span>0</span>
@@ -76,31 +76,31 @@
                                 </div>
                             </div>
                             <div>
-                                <label for="padding" class="block text-sm font-medium text-gray-700">Padding (px)</label>
+                                <label for="padding" class="block text-sm font-medium text-gray-700" data-i18n="padding_label">Padding (px)</label>
                                 <input type="number" id="padding" min="0" max="100" value="5" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                             </div>
                         </div>
                     </div>
 
                     <div>
-                        <h3 class="text-lg font-medium mb-3">Placement Settings</h3>
+                        <h3 class="text-lg font-medium mb-3" data-i18n="placement_section_title">Placement Settings</h3>
                         <div class="space-y-3">
                             <div>
-                                <label for="frontOffset" class="block text-sm font-medium text-gray-700">Front ID Vertical Offset (%)</label>
+                                <label for="frontOffset" class="block text-sm font-medium text-gray-700" data-i18n="front_offset_label">Front ID Vertical Offset (%)</label>
                                 <input type="range" id="frontOffset" min="0" max="50" value="30" class="w-full">
                                 <div class="flex justify-between text-xs text-gray-500">
-                                    <span>0% (Top)</span>
-                                    <span>25%</span>
-                                    <span>50% (Center)</span>
+                                    <span data-i18n="position_top">0% (Top)</span>
+                                    <span data-i18n="position_center_top">25%</span>
+                                    <span data-i18n="position_center">50% (Center)</span>
                                 </div>
                             </div>
                             <div>
-                                <label for="backOffset" class="block text-sm font-medium text-gray-700">Back ID Vertical Offset (%)</label>
+                                <label for="backOffset" class="block text-sm font-medium text-gray-700" data-i18n="back_offset_label">Back ID Vertical Offset (%)</label>
                                 <input type="range" id="backOffset" min="50" max="100" value="70" class="w-full">
                                 <div class="flex justify-between text-xs text-gray-500">
-                                    <span>50% (Center)</span>
-                                    <span>75%</span>
-                                    <span>100% (Bottom)</span>
+                                    <span data-i18n="position_center">50% (Center)</span>
+                                    <span data-i18n="position_center_bottom">75%</span>
+                                    <span data-i18n="position_bottom">100% (Bottom)</span>
                                 </div>
                             </div>
                         </div>
@@ -109,25 +109,25 @@
             </details>
 
             <div class="mb-6">
-                <h2 class="text-xl font-semibold mb-4">Preview</h2>
+                <h2 class="text-xl font-semibold mb-4" data-i18n="preview_title">Preview</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <h3 class="text-md font-medium mb-2">Front ID (Cropped)</h3>
+                        <h3 class="text-md font-medium mb-2" data-i18n="front_preview_title">Front ID (Cropped)</h3>
                         <div id="frontPreview" class="border border-gray-300 rounded-lg h-48 flex items-center justify-center bg-gray-100">
-                            <p class="text-gray-500 text-sm">Upload a PDF to preview</p>
+                            <p class="text-gray-500 text-sm" data-i18n="preview_placeholder">Upload a PDF to preview</p>
                         </div>
                     </div>
                     <div>
-                        <h3 class="text-md font-medium mb-2">Back ID (Cropped)</h3>
+                        <h3 class="text-md font-medium mb-2" data-i18n="back_preview_title">Back ID (Cropped)</h3>
                         <div id="backPreview" class="border border-gray-300 rounded-lg h-48 flex items-center justify-center bg-gray-100">
-                            <p class="text-gray-500 text-sm">Upload a PDF to preview</p>
+                            <p class="text-gray-500 text-sm" data-i18n="preview_placeholder">Upload a PDF to preview</p>
                         </div>
                     </div>
                 </div>
                 <div class="mt-4">
-                    <h3 class="text-md font-medium mb-2">Combined Output Preview</h3>
+                    <h3 class="text-md font-medium mb-2" data-i18n="combined_preview_title">Combined Output Preview</h3>
                     <div id="combinedPreview" class="border border-gray-300 rounded-lg h-96 flex items-center justify-center bg-gray-100">
-                        <p class="text-gray-500 text-sm">Upload a PDF to preview combined output</p>
+                        <p class="text-gray-500 text-sm" data-i18n="combined_preview_placeholder">Upload a PDF to preview combined output</p>
                     </div>
                 </div>
             </div>
@@ -137,13 +137,13 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    Generate PDF
+                    <span data-i18n="generate_button">Generate PDF</span>
                 </button>
                 <a id="downloadButton" class="hidden inline-flex items-center justify-center px-5 py-3 bg-white border border-gray-300 text-base font-medium rounded-lg shadow-sm text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200 ml-4">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
-                    Download PDF
+                    <span data-i18n="download_button">Download PDF</span>
                 </a>
             </div>
         </main>
