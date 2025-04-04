@@ -4,16 +4,21 @@
  */
 
 import { PDFDocument, PDFPage, Image } from "mupdf/mupdfjs"
+import { Finally } from "./utils";
 
 async function getImagesByMupdf(buffer: ArrayBuffer) {
     const pdfDoc = PDFDocument.openDocument(buffer);
+    using _ = new Finally(() => pdfDoc.destroy());
     if (pdfDoc.countPages() !== 2) {
         throw new Error(`Expected a 2-page PDF, but got ${pdfDoc.countPages()} pages.`);
     }
     const frontPage = pdfDoc.loadPage(0);
     const backPage = pdfDoc.loadPage(1);
+    using _frontPage = new Finally(() => frontPage.destroy());
+    using _backPage = new Finally(() => backPage.destroy());
     let imagesInFrontPage = frontPage.getImages().map(async (image) => {
         var pixmap = image.image.toPixmap();
+        using _pixmap = new Finally(() => pixmap.destroy());
         let raster = pixmap.asPNG();
         let imageResult: ImageWithDPI = {
             blob: new Blob([raster], { type: 'image/png' }), 
@@ -60,10 +65,10 @@ export class PDFProcessor {
         const pdfBytes = await file.arrayBuffer();
 
         try {
-            let result = await getImagesByMupdf(pdfBytes);
-            this.frontImage = result.frontImage;
-            this.backImage = result.backImage;
-            return result;
+        let result = await getImagesByMupdf(pdfBytes);
+        this.frontImage = result.frontImage;
+        this.backImage = result.backImage;
+        return result;
         } catch {
             throw new Error('Failed to extract images from PDF.');
         }
@@ -145,7 +150,9 @@ export class PDFProcessor {
 
         // Create new PDF using jsPDF
         const pdf = PDFDocument.createBlankDocument();
+        using _ = new Finally(() => pdf.destroy());
         const page = new PDFPage(pdf, 0);
+        using _1 = new Finally(() => page.destroy());
         const bounds = page.getBounds();
         const pageWidth = bounds[2] - bounds[0];
         const pageHeight = bounds[3] - bounds[1];
@@ -161,13 +168,17 @@ export class PDFProcessor {
         const backX = (pageWidth - backImagePtWidth) / 2;
 
         // Add images to PDF
-        page.insertImage({image: new Image(await frontImage.blob.arrayBuffer()), name: 'frontImage'}, {
+        const mupdfFrontImage = new Image(await frontImage.blob.arrayBuffer());
+        using _2 = new Finally(() => mupdfFrontImage.destroy());
+        page.insertImage({image: mupdfFrontImage, name: 'frontImage'}, {
             x: frontX,
             y: frontY,
             width: frontImagePtWidth,
             height: frontImagePtHeight
         });
-        page.insertImage({image: new Image(await backImage.blob.arrayBuffer()), name: 'backImage'}, {
+        const mupdfBackImage = new Image(await backImage.blob.arrayBuffer());
+        using _3 = new Finally(() => mupdfBackImage.destroy());
+        page.insertImage({image: mupdfBackImage, name: 'backImage'}, {
             x: backX,
             y: backY,
             width: backImagePtWidth,

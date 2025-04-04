@@ -36,3 +36,14 @@ export async function showImage(image: Uint8Array) {
         });
     }
 }
+
+export class Finally {
+    private cleanup: () => void;
+
+    constructor(cleanup: () => void) {
+        this.cleanup = cleanup;
+    }
+    [Symbol.dispose]() {
+        this.cleanup();
+    }
+}
