@@ -2,6 +2,7 @@
  * UI Controller for ID Card PDF Merger
  * Handles all UI-related functionality and DOM interactions
  */
+import { getImageFromSrc } from './utils';
 import i18n from './i18n';
 
 type StatusType = 'info' | 'success' | 'error';
@@ -186,7 +187,7 @@ export class UIController {
         
         // Generate PDF button listener
         if (this.generateButton) {
-            this.generateButton.addEventListener('click', () => handleGeneratePDF());
+            this.generateButton.addEventListener('click', handleGeneratePDF);
         }
     }
     
@@ -234,40 +235,42 @@ export class UIController {
     
     /**
      * Update the front and back image previews
-     * @param {HTMLImageElement} frontImage - The cropped front image canvas
-     * @param {HTMLImageElement} backImage - The cropped back image canvas
+     * @param frontImage - The cropped front image canvas
+     * @param backImage - The cropped back image canvas
      */
-    updateImagePreviews(frontImage: HTMLImageElement, backImage: HTMLImageElement): void {
+    async updateImagePreviews(frontImage: ImageWithDPI, backImage: ImageWithDPI): Promise<void> {
         if (this.frontPreview) {
+            const img = await getImageFromSrc(URL.createObjectURL(frontImage.blob));
             this.frontPreview.innerHTML = '';
-            frontImage.style.maxWidth = '100%';
-            frontImage.style.maxHeight = '100%';
-            frontImage.style.objectFit = 'contain';
-            this.frontPreview.appendChild(frontImage);
+            img.style.maxWidth = '100%';
+            img.style.maxHeight = '100%';
+            img.style.objectFit = 'contain';
+            this.frontPreview.appendChild(img);
         }
         
         if (this.backPreview) {
+            const img = await getImageFromSrc(URL.createObjectURL(backImage.blob));
             this.backPreview.innerHTML = '';
-            backImage.style.maxWidth = '100%';
-            backImage.style.maxHeight = '100%';
-            backImage.style.objectFit = 'contain';
-            this.backPreview.appendChild(backImage);
+            img.style.maxWidth = '100%';
+            img.style.maxHeight = '100%';
+            img.style.objectFit = 'contain';
+            this.backPreview.appendChild(img);
         }
     }
     
     /**
      * Update the combined preview showing both images on A4
-     * @param {HTMLImageElement} frontImage - The cropped front image canvas
-     * @param {HTMLImageElement} backImage - The cropped back image canvas
+     * @param {ImageWithDPI} frontImage - The cropped front image canvas
+     * @param {ImageWithDPI} backImage - The cropped back image canvas
      * @param {number} frontOffset - Vertical position of front image (0-50%)
      * @param {number} backOffset - Vertical position of back image (50-100%)
      */
-    updateCombinedPreview(
-        frontImage: HTMLImageElement,
-        backImage: HTMLImageElement,
+    async updateCombinedPreview(
+        frontImage: ImageWithDPI,
+        backImage: ImageWithDPI,
         frontOffset: number,
         backOffset: number
-    ): void {
+    ): Promise<void> {
         if (!this.combinedPreview) return;
         const ctxWidth = this.a4Width * frontImage.dpi;
         const ctxHeight = this.a4Height * frontImage.dpi;
@@ -285,16 +288,16 @@ export class UIController {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         // Calculate positions
-        const frontY = (ctxHeight * frontOffset / 100) - (frontImage.naturalHeight / 2);
-        const backY = (ctxHeight * backOffset / 100) - (backImage.naturalHeight / 2);
+        const frontY = (ctxHeight * frontOffset / 100) - (frontImage.height / 2);
+        const backY = (ctxHeight * backOffset / 100) - (backImage.height / 2);
         
         // Draw front image centered horizontally
-        const frontX = (ctxWidth - frontImage.naturalWidth) / 2;
-        ctx.drawImage(frontImage, frontX, frontY, frontImage.naturalWidth, frontImage.naturalHeight);
+        const frontX = (ctxWidth - frontImage.width) / 2;
+        ctx.drawImage(await window.createImageBitmap(frontImage.blob), frontX, frontY, frontImage.width, frontImage.height);
         
         // Draw back image centered horizontally
-        const backX = (ctxWidth - backImage.naturalWidth) / 2;
-        ctx.drawImage(backImage, backX, backY, backImage.naturalWidth, backImage.naturalHeight);
+        const backX = (ctxWidth - backImage.width) / 2;
+        ctx.drawImage(await window.createImageBitmap(backImage.blob), backX, backY, backImage.width, backImage.height);
         
         // Update preview
         this.combinedPreview.innerHTML = '';

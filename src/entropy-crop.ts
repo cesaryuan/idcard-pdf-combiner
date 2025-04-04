@@ -50,13 +50,13 @@ export class EntropyCropper {
 
     /**
      * Find the optimal crop region based on entropy
-     * @param {HTMLImageElement} image - The image to analyze
-     * @param {number} threshold - Threshold value (0-1) for determining crop boundaries
-     * @return {Object} - The crop region with x, y, width, height
+     * @param image - The image to analyze
+     * @param threshold - Threshold value (0-1) for determining crop boundaries
+     * @return The crop region with x, y, width, height
      */
-    findCropRegion(image: HTMLImageElement, threshold: number = 0.5): { x: number; y: number; width: number; height: number } {
-        const width = image.naturalWidth;
-        const height = image.naturalHeight;
+    async findCropRegion(image: ImageWithDPI, threshold: number = 0.5): Promise<{ x: number; y: number; width: number; height: number }> {
+        const width = image.width;
+        const height = image.height;
         
         // Resize canvas to match image dimensions
         this.canvas.width = width;
@@ -64,7 +64,7 @@ export class EntropyCropper {
         
         // Draw image on canvas
         if (this.ctx) {
-            this.ctx.drawImage(image, 0, 0, width, height);
+            this.ctx.drawImage(await window.createImageBitmap(image.blob), 0, 0, width, height);
             
             // Calculate entropy for rows and columns
             const rowEntropy = new Array(height).fill(0);
@@ -146,14 +146,14 @@ export class EntropyCropper {
 
     /**
      * Crop an image based on entropy
-     * @param {HTMLImageElement} image - The image to crop
+     * @param {ImageWithDPI} image - The image to crop
      * @param {number} threshold - Threshold value (0-1) for determining crop boundaries
      * @param {number} padding - Padding to add around the crop region
-     * @return {HTMLImageElement} - Image containing the cropped image
+     * @return {ImageWithDPI} - Image containing the cropped image
      */
-    async cropImage(image: HTMLImageElement, threshold: number = 0.5, padding: number = 10): Promise<HTMLImageElement> {
+    async cropImage(image: ImageWithDPI, threshold: number = 0.5, padding: number = 10): Promise<ImageWithDPI> {
         // Find crop region
-        const region = this.findCropRegion(image, threshold);
+        const region = await this.findCropRegion(image, threshold);
         
         // Apply padding
         region.x = Math.max(0, region.x - padding);
@@ -170,13 +170,24 @@ export class EntropyCropper {
         const resultCtx = resultCanvas.getContext('2d');
         if (resultCtx) {
             resultCtx.drawImage(
-                image,
+                await window.createImageBitmap(image.blob),
                 region.x, region.y, region.width, region.height,
                 0, 0, region.width, region.height
             );
         }
-        const resultImage = await getImageFromSrc(resultCanvas.toDataURL());
-        resultImage.dpi = image.dpi;
-        return resultImage;
+        return {
+            blob: await new Promise((resolve, reject) => {
+                resultCanvas.toBlob((blob) => {
+                    if (!blob) {
+                        reject(new Error('Failed to convert canvas to blob'));
+                        return;
+                    }
+                    resolve(blob);
+                });
+            }),
+            dpi: image.dpi,
+            width: region.width,
+            height: region.height
+        }
     }
 } 

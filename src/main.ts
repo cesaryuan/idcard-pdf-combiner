@@ -77,7 +77,7 @@ function init(ui: UIController, pdfProcessor: PDFProcessor, entropyCropper: Entr
     /**
      * Handle PDF generation
      */
-    function handleGeneratePDF() {
+    async function handleGeneratePDF() {
         if (!pdfProcessor.hasCroppedImages()) {
             return
         }
@@ -90,7 +90,7 @@ function init(ui: UIController, pdfProcessor: PDFProcessor, entropyCropper: Entr
             const { croppedFront, croppedBack } = pdfProcessor.getCroppedImages()
             
             // Generate PDF
-            const outputUrl = pdfProcessor.generatePdf(croppedFront, croppedBack, frontOffset, backOffset)
+            const outputUrl = await pdfProcessor.generatePdf(croppedFront, croppedBack, frontOffset, backOffset)
             
             // Auto download PDF
             // ui.setupDownloadButton(outputUrl)
