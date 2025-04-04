@@ -63,15 +63,10 @@ export class PDFProcessor {
             throw new Error('Invalid file type. Please upload a PDF.');
         }
         const pdfBytes = await file.arrayBuffer();
-
-        try {
         let result = await getImagesByMupdf(pdfBytes);
         this.frontImage = result.frontImage;
         this.backImage = result.backImage;
         return result;
-        } catch {
-            throw new Error('Failed to extract images from PDF.');
-        }
     }
 
     /**
