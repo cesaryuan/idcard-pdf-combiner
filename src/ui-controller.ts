@@ -235,8 +235,8 @@ export class UIController {
     
     /**
      * Update the front and back image previews
-     * @param frontImage - The cropped front image canvas
-     * @param backImage - The cropped back image canvas
+     * @param frontImage - The cropped front image
+     * @param backImage - The cropped back image
      */
     async updateImagePreviews(frontImage: ImageWithDPI, backImage: ImageWithDPI): Promise<void> {
         if (this.frontPreview) {
@@ -260,8 +260,8 @@ export class UIController {
     
     /**
      * Update the combined preview showing both images on A4
-     * @param {ImageWithDPI} frontImage - The cropped front image canvas
-     * @param {ImageWithDPI} backImage - The cropped back image canvas
+     * @param {ImageWithDPI} frontImage - The cropped front image
+     * @param {ImageWithDPI} backImage - The cropped back image
      * @param {number} frontOffset - Vertical position of front image (0-50%)
      * @param {number} backOffset - Vertical position of back image (50-100%)
      */

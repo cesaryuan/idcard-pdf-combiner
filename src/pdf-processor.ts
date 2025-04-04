@@ -127,8 +127,8 @@ export class PDFProcessor {
 
     /**
      * Generate a PDF with the cropped images
-     * @param {ImageWithDPI} frontImage - The cropped front image canvas
-     * @param {ImageWithDPI} backImage - The cropped back image canvas
+     * @param {ImageWithDPI} frontImage - The cropped front image
+     * @param {ImageWithDPI} backImage - The cropped back image
      * @param {number} frontOffset - Vertical position of front image (0-50%)
      * @param {number} backOffset - Vertical position of back image (50-100%)
      * @return {string} URL for the generated PDF
