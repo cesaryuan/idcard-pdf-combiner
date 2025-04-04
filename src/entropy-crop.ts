@@ -143,14 +143,49 @@ export class EntropyCropper {
         };
     }
 
+    async rotateImage(image: ImageWithDPI, rotation: number): Promise<ImageWithDPI> {
+        // first calculate the new width and height
+        const newWidth = Math.ceil(Math.abs(image.width * Math.cos(rotation * Math.PI / 180)) + Math.abs(image.height * Math.sin(rotation * Math.PI / 180)));
+        const newHeight = Math.ceil(Math.abs(image.width * Math.sin(rotation * Math.PI / 180)) + Math.abs(image.height * Math.cos(rotation * Math.PI / 180)));
+        this.canvas.width = newWidth;
+        this.canvas.height = newHeight;
+        if (!this.ctx) {
+            throw new Error('Failed to create canvas context');
+        }
+        this.ctx.clearRect(0, 0, newWidth, newHeight);
+        this.ctx.save();
+        this.ctx.translate(newWidth / 2, newHeight / 2);
+        this.ctx.rotate(rotation * Math.PI / 180);
+        this.ctx.drawImage(await window.createImageBitmap(image.blob), -image.width / 2, -image.height / 2, image.width, image.height);
+        this.ctx.restore();
+        return {
+            blob: await this.canvas.convertToBlob(),
+            dpi: image.dpi,
+            width: newWidth,
+            height: newHeight
+        }
+    }
+
     /**
      * Crop an image based on entropy
      * @param {ImageWithDPI} image - The image to crop
-     * @param {number} threshold - Threshold value (0-1) for determining crop boundaries
-     * @param {number} padding - Padding to add around the crop region
+     * @param {Object} options - The options for cropping
+     * @param {number} options.threshold - Threshold value (0-1) for determining crop boundaries
+     * @param {number} options.padding - Padding to add around the crop region
+     * @param {number} options.rotation - Rotation angle for the image (0-360)
      * @return {ImageWithDPI} - Image containing the cropped image
      */
-    async cropImage(image: ImageWithDPI, threshold: number = 0.5, padding: number = 10): Promise<ImageWithDPI> {
+    async rotateAndCropImage(image: ImageWithDPI, {
+        threshold = 0.5,
+        padding = 10,
+        rotation = 0
+    }: {
+        threshold?: number,
+        padding?: number,
+        rotation?: number
+    }): Promise<ImageWithDPI> {
+        // rotate image
+        image = await this.rotateImage(image, rotation);
         // Find crop region
         const region = await this.findCropRegion(image, threshold);
         

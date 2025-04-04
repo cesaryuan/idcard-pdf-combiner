@@ -134,6 +134,43 @@
                         </div>
                     </div>
                 </div>
+                
+                <div class="p-4 border-t border-gray-200">
+                    <h3 class="text-lg font-medium mb-3" data-i18n="rotation_section_title">Rotation Settings</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <label for="frontRotation" class="block text-sm font-medium text-gray-700" data-i18n="front_rotation_label">Front ID Rotation (°)</label>
+                                    <span class="tip" title="Adjust the rotation angle of the front ID card for skew correction. Positive values rotate clockwise, negative values rotate counterclockwise."></span>
+                                </div>
+                                <span id="frontRotationValue" class="text-xs text-gray-600">0°</span>
+                            </div>
+                            <input type="range" id="frontRotation" min="-180" max="180" step="0.2" value="0" class="w-full">
+                            <div class="flex justify-between text-xs text-gray-500">
+                                <span>-180°</span>
+                                <span>0°</span>
+                                <span>+180°</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <label for="backRotation" class="block text-sm font-medium text-gray-700" data-i18n="back_rotation_label">Back ID Rotation (°)</label>
+                                    <span class="tip" title="Adjust the rotation angle of the back ID card for skew correction. Positive values rotate clockwise, negative values rotate counterclockwise."></span>
+                                </div>
+                                <span id="backRotationValue" class="text-xs text-gray-600">0°</span>
+                            </div>
+                            <input type="range" id="backRotation" min="-180" max="180" step="0.2" value="0" class="w-full">
+                            <div class="flex justify-between text-xs text-gray-500">
+                                <span>-180°</span>
+                                <span>0°</span>
+                                <span>+180°</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </details>
 
             <div class="mb-6">

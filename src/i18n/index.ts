@@ -30,6 +30,11 @@ const resources = {
       "position_center_bottom": "75%",
       "position_bottom": "100% (Bottom)",
       
+      // Rotation settings
+      "rotation_section_title": "Rotation Settings",
+      "front_rotation_label": "Front ID Rotation (°)",
+      "back_rotation_label": "Back ID Rotation (°)",
+      
       // Preview section
       "preview_title": "Preview",
       "front_preview_title": "Front ID (Cropped)",
@@ -49,7 +54,7 @@ const resources = {
       "status_failed_preview": "Failed to update preview.",
       "status_generating_pdf": "Generating PDF...",
       "status_pdf_generated": "PDF generated successfully.",
-      "status_failed_generation": "Failed to generate PDF.",
+      "status_failed_generate": "Failed to generate PDF: {{error}}",
       "status_upload_pdf": "Please upload a PDF file."
     }
   },
@@ -72,18 +77,23 @@ const resources = {
       
       // Placement settings
       "placement_section_title": "位置设置",
-      "front_offset_label": "正面垂直偏移（%）",
-      "back_offset_label": "背面垂直偏移（%）",
+      "front_offset_label": "正面身份证垂直偏移（%）",
+      "back_offset_label": "背面身份证垂直偏移（%）",
       "position_top": "0%（顶部）",
       "position_center_top": "25%",
       "position_center": "50%（中间）",
       "position_center_bottom": "75%",
       "position_bottom": "100%（底部）",
       
+      // Rotation settings
+      "rotation_section_title": "旋转设置",
+      "front_rotation_label": "正面身份证旋转角度（°）",
+      "back_rotation_label": "背面身份证旋转角度（°）",
+      
       // Preview section
       "preview_title": "预览",
-      "front_preview_title": "正面（已裁剪）",
-      "back_preview_title": "背面（已裁剪）",
+      "front_preview_title": "正面身份证（已裁剪）",
+      "back_preview_title": "背面身份证（已裁剪）",
       "combined_preview_title": "合并输出预览",
       "preview_placeholder": "上传PDF以预览",
       "combined_preview_placeholder": "上传PDF以预览合并输出",
@@ -95,11 +105,11 @@ const resources = {
       // Status messages
       "status_loading_pdf": "正在加载PDF...",
       "status_pdf_processed": "PDF处理成功。",
-      "status_failed_process": "PDF处理失败：{{error}}",
+      "status_failed_process": "处理PDF失败：{{error}}",
       "status_failed_preview": "更新预览失败。",
       "status_generating_pdf": "正在生成PDF...",
       "status_pdf_generated": "PDF生成成功。",
-      "status_failed_generation": "生成PDF失败。",
+      "status_failed_generate": "生成PDF失败：{{error}}",
       "status_upload_pdf": "请上传PDF文件。"
     }
   }

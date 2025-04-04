@@ -33,11 +33,18 @@ async function handlePreviewUpdate() {
     
     try {
         const { frontImage, backImage } = pdfProcessor.getImages()
-        const { threshold, padding } = settings
+        const { threshold, padding, frontRotation, backRotation } = settings
         
         // Crop images using entropy cropping
-        const croppedFront = await entropyCropper.cropImage(frontImage, threshold, padding)
-        const croppedBack = await entropyCropper.cropImage(backImage, threshold, padding)
+        const croppedFront = await entropyCropper.rotateAndCropImage(frontImage, { 
+            threshold, 
+            padding, 
+            rotation: frontRotation 
+        })
+        const croppedBack = await entropyCropper.rotateAndCropImage(backImage, { 
+            threshold, 
+            padding, 
+            rotation: backRotation })
         
         // Update processor with cropped images
         pdfProcessor.setCroppedImages(croppedFront, croppedBack)

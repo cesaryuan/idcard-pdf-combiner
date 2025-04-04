@@ -11,6 +11,8 @@ type Settings = {
     padding: number;
     frontOffset: number;
     backOffset: number;
+    frontRotation: number;
+    backRotation: number;
 };
 
 export class UIController {
@@ -27,6 +29,10 @@ export class UIController {
     private paddingInput: HTMLInputElement | null;
     private frontOffsetInput: HTMLInputElement | null;
     private backOffsetInput: HTMLInputElement | null;
+    private frontRotationInput: HTMLInputElement | null;
+    private backRotationInput: HTMLInputElement | null;
+    private frontRotationValue: HTMLElement | null;
+    private backRotationValue: HTMLElement | null;
     
     // A4 paper dimensions at 72 DPI (inches)
     private a4Width = 8.27;
@@ -50,6 +56,10 @@ export class UIController {
         this.paddingInput = document.getElementById('padding') as HTMLInputElement;
         this.frontOffsetInput = document.getElementById('frontOffset') as HTMLInputElement;
         this.backOffsetInput = document.getElementById('backOffset') as HTMLInputElement;
+        this.frontRotationInput = document.getElementById('frontRotation') as HTMLInputElement;
+        this.backRotationInput = document.getElementById('backRotation') as HTMLInputElement;
+        this.frontRotationValue = document.getElementById('frontRotationValue');
+        this.backRotationValue = document.getElementById('backRotationValue');
         
         // Initialize the translations
         this.initializeTranslations();
@@ -185,6 +195,25 @@ export class UIController {
             });
         }
         
+        // Rotation settings change listeners
+        if (this.frontRotationInput) {
+            this.frontRotationInput.addEventListener('input', () => {
+                if (this.frontRotationValue) {
+                    this.frontRotationValue.textContent = `${this.frontRotationInput?.value}°`;
+                }
+                this.debounce(handlePreviewUpdate, 'frontRotation');
+            });
+        }
+        
+        if (this.backRotationInput) {
+            this.backRotationInput.addEventListener('input', () => {
+                if (this.backRotationValue) {
+                    this.backRotationValue.textContent = `${this.backRotationInput?.value}°`;
+                }
+                this.debounce(handlePreviewUpdate, 'backRotation');
+            });
+        }
+        
         // Generate PDF button listener
         if (this.generateButton) {
             this.generateButton.addEventListener('click', handleGeneratePDF);
@@ -224,12 +253,16 @@ export class UIController {
         const padding = parseInt(this.paddingInput ? this.paddingInput.value : '5', 10);
         const frontOffset = parseInt(this.frontOffsetInput ? this.frontOffsetInput.value : '30', 10);
         const backOffset = parseInt(this.backOffsetInput ? this.backOffsetInput.value : '70', 10);
+        const frontRotation = parseFloat(this.frontRotationInput ? this.frontRotationInput.value : '0');
+        const backRotation = parseFloat(this.backRotationInput ? this.backRotationInput.value : '0');
         
         return {
             threshold,
             padding,
             frontOffset,
-            backOffset
+            backOffset,
+            frontRotation,
+            backRotation
         };
     }
     
