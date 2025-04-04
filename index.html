@@ -99,7 +99,7 @@
                                     <label for="padding" class="block text-sm font-medium text-gray-700" data-i18n="padding_label">Padding (px)</label>
                                     <span class="tip" title="Extra space added around the cropped ID card. Higher values add more padding around the card."></span>
                                 </div>
-                                <input type="number" id="padding" min="0" max="100" value="5" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                <input type="number" id="padding" min="0" max="100" value="5" class="w-full pl-2 py-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                             </div>
                         </div>
                     </div>
@@ -108,28 +108,34 @@
                         <h3 class="text-lg font-medium mb-3" data-i18n="placement_section_title">Placement Settings</h3>
                         <div class="space-y-3">
                             <div>
-                                <div class="flex items-center">
-                                    <label for="frontOffset" class="block text-sm font-medium text-gray-700" data-i18n="front_offset_label">Front ID Vertical Offset (%)</label>
-                                    <span class="tip" title="Controls the vertical position of the front ID card on the output page. Lower values place it higher, higher values place it lower."></span>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <label for="frontOffset" class="block text-sm font-medium text-gray-700" data-i18n="front_offset_label">Front ID Vertical Offset (%)</label>
+                                        <span class="tip" title="Controls the vertical position of the front ID card on the output page. Lower values place it higher, higher values place it lower."></span>
+                                    </div>
+                                    <span id="frontOffsetValue" class="text-xs text-gray-600">30%</span>
                                 </div>
-                                <input type="range" id="frontOffset" min="0" max="50" value="30" class="w-full">
-                                <div class="flex justify-between text-xs text-gray-500">
+                                <input type="range" id="frontOffset" min="0" max="50" value="30" class="w-full" oninput="document.getElementById('frontOffsetValue').textContent = this.value + '%'">
+                                <!-- <div class="flex justify-between text-xs text-gray-500">
                                     <span data-i18n="position_top">0% (Top)</span>
                                     <span data-i18n="position_center_top">25%</span>
                                     <span data-i18n="position_center">50% (Center)</span>
-                                </div>
+                                </div> -->
                             </div>
                             <div>
-                                <div class="flex items-center">
-                                    <label for="backOffset" class="block text-sm font-medium text-gray-700" data-i18n="back_offset_label">Back ID Vertical Offset (%)</label>
-                                    <span class="tip" title="Controls the vertical position of the back ID card on the output page. Lower values place it higher, higher values place it lower."></span>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <label for="backOffset" class="block text-sm font-medium text-gray-700" data-i18n="back_offset_label">Back ID Vertical Offset (%)</label>
+                                        <span class="tip" title="Controls the vertical position of the back ID card on the output page. Lower values place it higher, higher values place it lower."></span>
+                                    </div>
+                                    <span id="backOffsetValue" class="text-xs text-gray-600">70%</span>
                                 </div>
-                                <input type="range" id="backOffset" min="50" max="100" value="70" class="w-full">
-                                <div class="flex justify-between text-xs text-gray-500">
+                                <input type="range" id="backOffset" min="50" max="100" value="70" class="w-full" oninput="document.getElementById('backOffsetValue').textContent = this.value + '%'">
+                                <!-- <div class="flex justify-between text-xs text-gray-500">
                                     <span data-i18n="position_center">50% (Center)</span>
                                     <span data-i18n="position_center_bottom">75%</span>
                                     <span data-i18n="position_bottom">100% (Bottom)</span>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>
@@ -146,12 +152,12 @@
                                 </div>
                                 <span id="frontRotationValue" class="text-xs text-gray-600">0°</span>
                             </div>
-                            <input type="range" id="frontRotation" min="-180" max="180" step="0.2" value="0" class="w-full">
-                            <div class="flex justify-between text-xs text-gray-500">
+                            <input type="range" id="frontRotation" min="-180" max="180" step="0.2" value="0" class="w-full" oninput="document.getElementById('frontRotationValue').textContent = this.value + '°'">
+                            <!-- <div class="flex justify-between text-xs text-gray-500">
                                 <span>-180°</span>
                                 <span>0°</span>
                                 <span>+180°</span>
-                            </div>
+                            </div> -->
                         </div>
                         
                         <div>
@@ -162,12 +168,12 @@
                                 </div>
                                 <span id="backRotationValue" class="text-xs text-gray-600">0°</span>
                             </div>
-                            <input type="range" id="backRotation" min="-180" max="180" step="0.2" value="0" class="w-full">
-                            <div class="flex justify-between text-xs text-gray-500">
+                            <input type="range" id="backRotation" min="-180" max="180" step="0.2" value="0" class="w-full" oninput="document.getElementById('backRotationValue').textContent = this.value + '°'">
+                            <!-- <div class="flex justify-between text-xs text-gray-500">
                                 <span>-180°</span>
                                 <span>0°</span>
                                 <span>+180°</span>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>

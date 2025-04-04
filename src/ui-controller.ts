@@ -31,8 +31,6 @@ export class UIController {
     private backOffsetInput: HTMLInputElement | null;
     private frontRotationInput: HTMLInputElement | null;
     private backRotationInput: HTMLInputElement | null;
-    private frontRotationValue: HTMLElement | null;
-    private backRotationValue: HTMLElement | null;
     
     // A4 paper dimensions at 72 DPI (inches)
     private a4Width = 8.27;
@@ -58,8 +56,6 @@ export class UIController {
         this.backOffsetInput = document.getElementById('backOffset') as HTMLInputElement;
         this.frontRotationInput = document.getElementById('frontRotation') as HTMLInputElement;
         this.backRotationInput = document.getElementById('backRotation') as HTMLInputElement;
-        this.frontRotationValue = document.getElementById('frontRotationValue');
-        this.backRotationValue = document.getElementById('backRotationValue');
         
         // Initialize the translations
         this.initializeTranslations();
@@ -198,18 +194,12 @@ export class UIController {
         // Rotation settings change listeners
         if (this.frontRotationInput) {
             this.frontRotationInput.addEventListener('input', () => {
-                if (this.frontRotationValue) {
-                    this.frontRotationValue.textContent = `${this.frontRotationInput?.value}°`;
-                }
                 this.debounce(handlePreviewUpdate, 'frontRotation');
             });
         }
         
         if (this.backRotationInput) {
             this.backRotationInput.addEventListener('input', () => {
-                if (this.backRotationValue) {
-                    this.backRotationValue.textContent = `${this.backRotationInput?.value}°`;
-                }
                 this.debounce(handlePreviewUpdate, 'backRotation');
             });
         }
