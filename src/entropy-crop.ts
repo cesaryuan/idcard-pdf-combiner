@@ -3,6 +3,8 @@
  * This file contains the logic for automatic cropping of ID card images based on entropy
  */
 
+import { getImageFromSrc } from "./utils";
+
 export class EntropyCropper {
     private canvas: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D | null;
@@ -149,7 +151,7 @@ export class EntropyCropper {
      * @param {number} padding - Padding to add around the crop region
      * @return {HTMLImageElement} - Image containing the cropped image
      */
-    cropImage(image: HTMLImageElement, threshold: number = 0.5, padding: number = 10): HTMLImageElement {
+    async cropImage(image: HTMLImageElement, threshold: number = 0.5, padding: number = 10): Promise<HTMLImageElement> {
         // Find crop region
         const region = this.findCropRegion(image, threshold);
         
@@ -173,9 +175,8 @@ export class EntropyCropper {
                 0, 0, region.width, region.height
             );
         }
-        const resultImage = new Image();
+        const resultImage = await getImageFromSrc(resultCanvas.toDataURL());
         resultImage.dpi = image.dpi;
-        resultImage.src = resultCanvas.toDataURL();
         return resultImage;
     }
 } 

@@ -32,25 +32,24 @@ function init(ui: UIController, pdfProcessor: PDFProcessor, entropyCropper: Entr
      * Handle file selection
      * @param {File} file - The selected PDF file
      */
-    function handleFileSelect(file: File) {
+    async function handleFileSelect(file: File) {
         ui.showStatus('Loading PDF...', 'info', true)
         
-        pdfProcessor.processPdf(file)
-            .then(() => {
-                ui.showStatus('PDF processed successfully.', 'success')
-                ui.enableGenerateButton()
-                handlePreviewUpdate()
-            })
-            .catch((error: Error) => {
-                console.error('Error processing PDF:', error)
-                ui.showStatus(`Failed to process PDF: ${error.message}`, 'error')
-            })
+        try {
+            await pdfProcessor.processPdf(file);
+            ui.showStatus('PDF processed successfully.', 'success')
+            ui.enableGenerateButton()
+            await handlePreviewUpdate()
+        } catch (error) {
+            console.error('Error processing PDF:', error)
+            ui.showStatus(`Failed to process PDF: ${error instanceof Error ? error.message : 'Unknown error'}`, 'error')
+        }
     }
     
     /**
      * Handle preview update when settings change
      */
-    function handlePreviewUpdate() {
+    async function handlePreviewUpdate() {
         const settings = ui.getSettings()
         
         if (!pdfProcessor.hasImages()) {
@@ -62,17 +61,15 @@ function init(ui: UIController, pdfProcessor: PDFProcessor, entropyCropper: Entr
             const { threshold, padding } = settings
             
             // Crop images using entropy cropping
-            const croppedFront = entropyCropper.cropImage(frontImage, threshold, padding)
-            const croppedBack = entropyCropper.cropImage(backImage, threshold, padding)
+            const croppedFront = await entropyCropper.cropImage(frontImage, threshold, padding)
+            const croppedBack = await entropyCropper.cropImage(backImage, threshold, padding)
             
             // Update processor with cropped images
             pdfProcessor.setCroppedImages(croppedFront, croppedBack)
             
             // Update UI with cropped images
             ui.updateImagePreviews(croppedFront, croppedBack)
-            setTimeout(() => {
-                ui.updateCombinedPreview(croppedFront, croppedBack, settings.frontOffset, settings.backOffset)
-            }, 0)
+            ui.updateCombinedPreview(croppedFront, croppedBack, settings.frontOffset, settings.backOffset)
         } catch (error) {
             console.error('Error updating preview:', error)
             ui.showStatus('Failed to update preview.', 'error')

@@ -5,6 +5,8 @@
 
 import * as pdfjsLib from 'pdfjs-dist';
 import { jsPDF } from 'jspdf';
+import { getImageFromPdf } from './pdf-image-extractor';
+import { getImageFromSrc } from './utils';
 
 // Configure the worker source for PDF.js
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.1.91/build/pdf.worker.min.mjs';
@@ -24,6 +26,78 @@ type CroppedImages = {
     croppedFront: HTMLImageElement;
     croppedBack: HTMLImageElement;
 };
+
+/**
+ * Gets the size of the specified page, converted from PDF units to inches.
+ */
+function getPageSizeInches({ view, userUnit, rotate }: { view: number[], userUnit: number, rotate: number }) {
+    const [x1, y1, x2, y2] = view;
+    // We need to take the page rotation into account as well.
+    const changeOrientation = rotate % 180 !== 0;
+
+    const width = ((x2 - x1) / 72) * userUnit;
+    const height = ((y2 - y1) / 72) * userUnit;
+
+    return {
+        width: changeOrientation ? height : width,
+        height: changeOrientation ? width : height,
+    };
+}
+
+/**
+ * Extract image from a PDF page
+ * @param page - The PDF page object from PDF.js
+ * @return Promise resolving to the extracted image
+ */
+async function extractImageFromPage(page: pdfjsLib.PDFPageProxy): Promise<HTMLImageElement> {
+    const scale = 4.0; // Higher scale for better quality
+    const viewport = page.getViewport({ scale });
+    
+    // Create canvas for rendering
+    const canvas = document.createElement('canvas');
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    
+    const context = canvas.getContext('2d');
+    if (!context) {
+        throw new Error('Failed to create canvas context.');
+    }
+    
+    // Render PDF page to canvas
+    const renderContext = {
+        canvasContext: context,
+        viewport: viewport
+    };
+    
+    await page.render(renderContext).promise;
+    const image = await getImageFromSrc(canvas.toDataURL('image/png'));
+    image.dpi = image.naturalWidth / getPageSizeInches(page).width;
+    return image;
+}
+
+async function extractImageByPDFJS(buffer: ArrayBuffer) {
+    // Load PDF using PDF.js
+    const pdf = await pdfjsLib.getDocument(buffer).promise;
+    if (pdf.numPages !== 2) {
+        throw new Error(`Expected a 2-page PDF, but got ${pdf.numPages} pages.`);
+    }
+        
+    // Get both pages
+    const frontPagePromise = pdf.getPage(1);
+    const backPagePromise = pdf.getPage(2);
+        
+    const [frontPage, backPage] = await Promise.all([frontPagePromise, backPagePromise]);
+
+    const [frontImg, backImg] = await Promise.all([
+        extractImageFromPage(frontPage),
+        extractImageFromPage(backPage)
+    ]);
+        
+    return {
+        frontImage: frontImg,
+        backImage: backImg
+    };
+}
 
 export class PDFProcessor {
     private frontImage: HTMLImageElement | null = null;
@@ -47,8 +121,8 @@ export class PDFProcessor {
      * @param {File} file - The PDF file to process
      * @return {Promise<PDFImages>} Promise resolving to extracted images
      */
-    processPdf(file: File): Promise<PDFImages> {
-        return new Promise((resolve, reject) => {
+    async processPdf(file: File): Promise<PDFImages> {
+        const pdfBytes = await new Promise<ArrayBuffer>((resolve, reject) => {
             if (!file || file.type !== 'application/pdf') {
                 reject(new Error('Invalid file type. Please upload a PDF.'));
                 return;
@@ -62,54 +136,11 @@ export class PDFProcessor {
                     return;
                 }
                 
-                let typedArray;
                 if (event.target.result instanceof ArrayBuffer) {
-                    typedArray = new Uint8Array(event.target.result);
+                    resolve(event.target.result);
                 } else {
                     reject(new Error('Invalid file data.'));
-                    return;
                 }
-                
-                // Load PDF using PDF.js
-                pdfjsLib.getDocument(typedArray).promise
-                    .then((pdf) => {
-                        if (pdf.numPages !== 2) {
-                            reject(new Error(`Expected a 2-page PDF, but got ${pdf.numPages} pages.`));
-                            return;
-                        }
-                        
-                        // Get both pages
-                        const frontPagePromise = pdf.getPage(1);
-                        const backPagePromise = pdf.getPage(2);
-                        
-                        return Promise.all([frontPagePromise, backPagePromise]);
-                    })
-                    .then((pages) => {
-                        if (!pages) return;
-                        
-                        const [frontPage, backPage] = pages;
-                        
-                        // Extract images from both pages
-                        return Promise.all([
-                            this.extractImageFromPage(frontPage),
-                            this.extractImageFromPage(backPage)
-                        ]);
-                    })
-                    .then((images) => {
-                        if (!images) return;
-                        
-                        const [frontImg, backImg] = images;
-                        this.frontImage = frontImg;
-                        this.backImage = backImg;
-                        
-                        resolve({
-                            frontImage: this.frontImage,
-                            backImage: this.backImage
-                        });
-                    })
-                    .catch((error) => {
-                        reject(error);
-                    });
             };
             
             fileReader.onerror = () => {
@@ -118,49 +149,30 @@ export class PDFProcessor {
             
             fileReader.readAsArrayBuffer(file);
         });
-    }
-    
-    /**
-     * Extract image from a PDF page
-     * @param page - The PDF page object from PDF.js
-     * @return {Promise<HTMLImageElement>} - Promise resolving to the extracted image
-     */
-    private extractImageFromPage(page: pdfjsLib.PDFPageProxy): Promise<HTMLImageElement> {
-        return new Promise((resolve, reject) => {
-            const scale = 4.0; // Higher scale for better quality
-            const viewport = page.getViewport({ scale });
-            
-            // Create canvas for rendering
-            const canvas = document.createElement('canvas');
-            canvas.width = viewport.width;
-            canvas.height = viewport.height;
-            
-            const context = canvas.getContext('2d');
-            if (!context) {
-                reject(new Error('Failed to create canvas context.'));
-                return;
-            }
-            
-            // Render PDF page to canvas
-            const renderContext = {
-                canvasContext: context,
-                viewport: viewport
-            };
-            
-            page.render(renderContext).promise
-                .then(() => {
-                    // Convert canvas to image
-                    const image = new Image();
-                    
-                    image.onload = () => {
-                        image.dpi = image.naturalWidth / this.getPageSizeInches(page).width;
-                        resolve(image);
-                    };
-                    image.onerror = () => reject(new Error('Failed to convert canvas to image.'));
-                    image.src = canvas.toDataURL('image/png');
-                })
-                .catch(reject);
-        });
+        
+        try {
+            let result = await extractImageByPDFJS(pdfBytes);
+            this.frontImage = result.frontImage;
+            this.backImage = result.backImage;
+            return result;
+        } catch {
+            throw new Error('Failed to extract images from PDF.');
+            // 无法计算图片 DPI，不符合要求
+            // let result = await getImageFromPdf(pdfBytes)
+            // if (result.length !== 2) {
+            //     throw new Error('Expected 2 images. Got ' + result.length);
+            // }
+            // if (!result[0].blob || !result[1].blob) {
+            //     throw new Error('No blob found');
+            // }
+            // this.frontImage = await getImageFromSrc(URL.createObjectURL(result[0].blob));
+            // this.backImage = await getImageFromSrc(URL.createObjectURL(result[1].blob));
+            // return {
+            //     frontImage: this.frontImage,
+            //     backImage: this.backImage
+            // }
+        }
+
     }
     
     /**
@@ -270,23 +282,5 @@ export class PDFProcessor {
         this.outputPdfUrl = URL.createObjectURL(blob);
         
         return this.outputPdfUrl;
-    }
-
-    /**
-     * Gets the size of the specified page, converted from PDF units to inches.
-     * @param params
-     */
-    getPageSizeInches({ view, userUnit, rotate }: { view: number[], userUnit: number, rotate: number }) {
-        const [x1, y1, x2, y2] = view;
-        // We need to take the page rotation into account as well.
-        const changeOrientation = rotate % 180 !== 0;
-    
-        const width = ((x2 - x1) / 72) * userUnit;
-        const height = ((y2 - y1) / 72) * userUnit;
-    
-        return {
-            width: changeOrientation ? height : width,
-            height: changeOrientation ? width : height,
-        };
     }
 } 
