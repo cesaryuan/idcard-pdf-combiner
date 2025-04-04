@@ -2,7 +2,7 @@
  * UI Controller for ID Card PDF Merger
  * Handles all UI-related functionality and DOM interactions
  */
-import { getImageFromSrc } from './utils';
+import { getImageFromBlob } from './utils';
 import i18n from './i18n';
 
 type StatusType = 'info' | 'success' | 'error';
@@ -240,7 +240,7 @@ export class UIController {
      */
     async updateImagePreviews(frontImage: ImageWithDPI, backImage: ImageWithDPI): Promise<void> {
         if (this.frontPreview) {
-            const img = await getImageFromSrc(URL.createObjectURL(frontImage.blob));
+            const img = await getImageFromBlob(frontImage.blob);
             this.frontPreview.innerHTML = '';
             img.style.maxWidth = '100%';
             img.style.maxHeight = '100%';
@@ -249,7 +249,7 @@ export class UIController {
         }
         
         if (this.backPreview) {
-            const img = await getImageFromSrc(URL.createObjectURL(backImage.blob));
+            const img = await getImageFromBlob(backImage.blob);
             this.backPreview.innerHTML = '';
             img.style.maxWidth = '100%';
             img.style.maxHeight = '100%';

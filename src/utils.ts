@@ -1,12 +1,10 @@
-export async function getImageFromSrc(src: string) {
+export async function getImageFromBlob(blob: Blob) {
     const image = new Image();
-    image.src = src;
-    return new Promise<HTMLImageElement>((resolve, reject) => {
-        image.onload = () => {
-            resolve(image);
-        }
-        image.onerror = reject;
-    });
+    image.src = URL.createObjectURL(blob);
+    image.onload = () => {
+        URL.revokeObjectURL(image.src);
+    }
+    return image;
 }
 
 // show image in dialog
@@ -23,6 +21,9 @@ export async function showImage(image: Uint8Array) {
         </div>
     `;
     document.body.appendChild(dialog);
+    dialog.querySelector('img')?.addEventListener('load', () => {
+        URL.revokeObjectURL(url);
+    });
     dialog.show();
     
     // Add event listener to close button
