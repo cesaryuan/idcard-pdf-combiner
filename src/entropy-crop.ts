@@ -4,11 +4,11 @@
  */
 
 export class EntropyCropper {
-    private canvas: HTMLCanvasElement;
-    private ctx: CanvasRenderingContext2D | null;
+    private canvas: OffscreenCanvas;
+    private ctx: OffscreenCanvasRenderingContext2D | null;
 
     constructor() {
-        this.canvas = document.createElement('canvas');
+        this.canvas = new OffscreenCanvas(0, 0);
         this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
     }
 
@@ -174,15 +174,7 @@ export class EntropyCropper {
             );
         }
         return {
-            blob: await new Promise((resolve, reject) => {
-                this.canvas.toBlob((blob) => {
-                    if (!blob) {
-                        reject(new Error('Failed to convert canvas to blob'));
-                        return;
-                    }
-                    resolve(blob);
-                });
-            }),
+            blob: await this.canvas.convertToBlob(),
             dpi: image.dpi,
             width: region.width,
             height: region.height
