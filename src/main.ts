@@ -5,14 +5,12 @@ import { PDFProcessor } from './pdf-processor'
 import { UIController } from './ui-controller'
 
 // Initialize the application
-document.addEventListener('DOMContentLoaded', () => {
-    const ui = new UIController()
-    const entropyCropper = new EntropyCropper()
-    const pdfProcessor = new PDFProcessor()
-        
-    // Initialize the application with UI controller and PDF processor
-    init(ui, pdfProcessor, entropyCropper)
-})
+const ui = new UIController()
+const entropyCropper = new EntropyCropper()
+const pdfProcessor = new PDFProcessor()
+    
+// Initialize the application with UI controller and PDF processor
+init(ui, pdfProcessor, entropyCropper)
 
 /**
  * Initialize the application
