@@ -11,7 +11,7 @@ async function handleFileSelect(file: File) {
     ui.showStatus('Loading PDF...', 'info', true)
     
     try {
-        await pdfProcessor.processPdf(file);
+        await pdfProcessor.extractImagesFromPdf(file);
         ui.showStatus('PDF processed successfully.', 'success')
         ui.enableGenerateButton()
         await handlePreviewUpdate()

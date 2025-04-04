@@ -53,7 +53,7 @@ export class PDFProcessor {
      * @param {File} file - The PDF file to process
      * @return {Promise<PDFImages>} Promise resolving to extracted images
      */
-    async processPdf(file: File): Promise<PDFImages> {
+    async extractImagesFromPdf(file: File): Promise<PDFImages> {
         if (!file || file.type !== 'application/pdf') {
             throw new Error('Invalid file type. Please upload a PDF.');
         }
