@@ -3,8 +3,6 @@
  * This file contains the logic for automatic cropping of ID card images based on entropy
  */
 
-import { getImageFromSrc } from "./utils";
-
 export class EntropyCropper {
     private canvas: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D | null;
@@ -64,6 +62,7 @@ export class EntropyCropper {
         
         // Draw image on canvas
         if (this.ctx) {
+            this.ctx.clearRect(0, 0, width, height);
             this.ctx.drawImage(await window.createImageBitmap(image.blob), 0, 0, width, height);
             
             // Calculate entropy for rows and columns
@@ -162,14 +161,13 @@ export class EntropyCropper {
         region.height = Math.min(image.height - region.y, region.height + (padding * 2));
         
         // Create a new canvas for the cropped result
-        const resultCanvas = document.createElement('canvas');
-        resultCanvas.width = region.width;
-        resultCanvas.height = region.height;
+        this.canvas.width = region.width;
+        this.canvas.height = region.height;
         
         // Draw the cropped region
-        const resultCtx = resultCanvas.getContext('2d');
-        if (resultCtx) {
-            resultCtx.drawImage(
+        if (this.ctx) {
+            this.ctx.clearRect(0, 0, region.width, region.height);
+            this.ctx.drawImage(
                 await window.createImageBitmap(image.blob),
                 region.x, region.y, region.width, region.height,
                 0, 0, region.width, region.height
@@ -177,7 +175,7 @@ export class EntropyCropper {
         }
         return {
             blob: await new Promise((resolve, reject) => {
-                resultCanvas.toBlob((blob) => {
+                this.canvas.toBlob((blob) => {
                     if (!blob) {
                         reject(new Error('Failed to convert canvas to blob'));
                         return;
