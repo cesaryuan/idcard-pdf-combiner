@@ -366,7 +366,10 @@ export class EntropyCropper {
             );
         }
         return {
-            blob: await this.canvas.convertToBlob(),
+            blob: await this.canvas.convertToBlob({
+                type: 'image/jpeg',
+                quality: 0.95
+            }),
             dpi: image.dpi,
             width: region.width,
             height: region.height
