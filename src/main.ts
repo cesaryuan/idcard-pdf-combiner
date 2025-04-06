@@ -3,6 +3,7 @@ import './i18n' // Import i18n configuration
 import { EntropyCropper } from './entropy-crop'
 import { PDFProcessor } from './pdf-processor'
 import { UIController } from './ui-controller'
+
 /**
  * Handle file selection
  * @param {File} file - The selected PDF file
@@ -84,6 +85,7 @@ async function handleGeneratePDF() {
         ui.showStatus('Failed to generate PDF.', 'error')
     }
 }
+
 // Initialize the application
 const ui = new UIController()
 const entropyCropper = new EntropyCropper()
