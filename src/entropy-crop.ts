@@ -167,6 +167,160 @@ export class EntropyCropper {
     }
 
     /**
+     * Deskew the image using the Hough transform
+     * @param image
+     * @link https://github.com/cyanfish/naps2/blob/master/NAPS2.Sdk/Images/Deskewer.cs
+     */
+    async deskew(image: ImageWithDPI): Promise<ImageWithDPI> {
+        // Constants for deskew algorithm
+        const ANGLE_MIN = -20;
+        const ANGLE_MAX = 20;
+        const ANGLE_STEPS = 201; // 0.2 degree step size
+        const BEST_MAX_COUNT = 100;
+        const BEST_THRESHOLD_INDEX = 9;
+        const BEST_THRESHOLD_FACTOR = 0.5;
+        const CLUSTER_TARGET_SPREAD = 2.01;
+        const IGNORE_EDGE_FRACTION = 0.01;
+
+        // Resize canvas to match image dimensions
+        this.canvas.width = image.width;
+        this.canvas.height = image.height;
+        
+        if (!this.ctx) {
+            throw new Error('Failed to create canvas context');
+        }
+        
+        // Draw image on canvas
+        this.ctx.clearRect(0, 0, image.width, image.height);
+        this.ctx.drawImage(await window.createImageBitmap(image.blob), 0, 0, image.width, image.height);
+        
+        // Get image data for processing
+        const imageData = this.ctx.getImageData(0, 0, image.width, image.height);
+        const data = imageData.data;
+        
+        // Create bitmap representation (true for black, false for white)
+        const bitmap: boolean[][] = [];
+        for (let y = 0; y < image.height; y++) {
+            bitmap[y] = [];
+            for (let x = 0; x < image.width; x++) {
+                const offset = (y * image.width + x) * 4;
+                const r = data[offset];
+                const g = data[offset + 1];
+                const b = data[offset + 2];
+                // Convert to grayscale and threshold
+                const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+                bitmap[y][x] = gray < 128; // true for dark pixels
+            }
+        }
+        
+        // Precalculate sin/cos values
+        const sinCos = new Array(ANGLE_STEPS);
+        const angleStepSize = (ANGLE_MAX - ANGLE_MIN) / (ANGLE_STEPS - 1);
+        for (let i = 0; i < ANGLE_STEPS; i++) {
+            const angle = (ANGLE_MIN + angleStepSize * i) * Math.PI / 180.0;
+            sinCos[i] = {
+                sin: Math.sin(angle),
+                cos: Math.cos(angle)
+            };
+        }
+        
+        // Initialize scores array
+        const h = image.height;
+        const w = image.width;
+        const yOffset = Math.round(h * IGNORE_EDGE_FRACTION);
+        const dCount = 2 * (w + h);
+        const scores: number[][] = new Array(dCount);
+        for (let d = 0; d < dCount; d++) {
+            scores[d] = new Array(ANGLE_STEPS).fill(0);
+        }
+        
+        // Find bottom edges of dark areas and calculate Hough transform
+        for (let y = 1 + yOffset; y <= h - 2 - yOffset; y++) {
+            for (let x = 1; x <= w - 2; x++) {
+                if (bitmap[y][x] && !bitmap[y+1][x]) {
+                    for (let i = 0; i < ANGLE_STEPS; i++) {
+                        const sc = sinCos[i];
+                        const d = Math.floor(y * sc.cos - x * sc.sin + w);
+                        if (d >= 0 && d < dCount) {
+                            scores[d][i]++;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Find angles of best lines
+        const best: {angleIndex: number, count: number}[] = new Array(BEST_MAX_COUNT);
+        for (let i = 0; i < BEST_MAX_COUNT; i++) {
+            best[i] = {angleIndex: 0, count: 0};
+        }
+        
+        for (let i = 0; i < dCount; i++) {
+            for (let angleIndex = 0; angleIndex < ANGLE_STEPS; angleIndex++) {
+                const count = scores[i][angleIndex];
+                if (count > best[BEST_MAX_COUNT - 1].count) {
+                    best[BEST_MAX_COUNT - 1] = {angleIndex, count};
+                    for (let j = BEST_MAX_COUNT - 2; j >= 0; j--) {
+                        if (count > best[j].count) {
+                            [best[j], best[j + 1]] = [best[j + 1], best[j]];
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Skip "insignificant" lines
+        const threshold = Math.floor(best[BEST_THRESHOLD_INDEX].count * BEST_THRESHOLD_FACTOR);
+        const bestWithinThreshold = best.filter(x => x.count >= threshold);
+        
+        // Calculate actual angles
+        const angles = bestWithinThreshold.map(x => ANGLE_MIN + angleStepSize * x.angleIndex);
+        
+        // Cluster angles
+        const sortedAngles = [...angles].sort((a, b) => a - b);
+        let largestCluster = 0;
+        let largestClusterIndex = 0;
+        
+        for (let i = 0; i < sortedAngles.length; i++) {
+            let clusterSize = 0;
+            for (let j = i; j < sortedAngles.length; j++) {
+                if (sortedAngles[j] < sortedAngles[i] + CLUSTER_TARGET_SPREAD) {
+                    clusterSize++;
+                } else {
+                    break;
+                }
+            }
+            
+            if (clusterSize > largestCluster) {
+                largestCluster = clusterSize;
+                largestClusterIndex = i;
+            }
+        }
+        
+        // Create cluster
+        const cluster: number[] = [];
+        for (let i = largestClusterIndex; i < sortedAngles.length; i++) {
+            if (sortedAngles[i] < sortedAngles[largestClusterIndex] + CLUSTER_TARGET_SPREAD) {
+                cluster.push(sortedAngles[i]);
+            } else {
+                break;
+            }
+        }
+        
+        // If we couldn't find a consistent skew angle, return the original image
+        if (cluster.length < angles.length / 2) {
+            return image;
+        }
+        
+        // Calculate the average angle in the cluster
+        const skewAngle = cluster.reduce((sum, angle) => sum + angle, 0) / cluster.length;
+        
+        console.log(`Skew angle: ${skewAngle}`);
+        // Rotate image by negative skew angle to correct it
+        return this.rotateImage(image, -skewAngle);
+    }
+
+    /**
      * Crop an image based on entropy
      * @param {ImageWithDPI} image - The image to crop
      * @param {Object} options - The options for cropping
@@ -185,7 +339,10 @@ export class EntropyCropper {
         rotation?: number
     }): Promise<ImageWithDPI> {
         // rotate image
-        image = await this.rotateImage(image, rotation);
+        image = await this.deskew(image);
+        if (rotation !== 0) {
+            image = await this.rotateImage(image, rotation);
+        }
         // Find crop region
         const region = await this.findCropRegion(image, threshold);
         
