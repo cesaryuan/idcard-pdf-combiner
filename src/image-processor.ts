@@ -3,7 +3,7 @@
  * This file contains the logic for automatic cropping of ID card images based on entropy
  */
 
-export class EntropyCropper {
+export class IDCardImageProcessor {
     private canvas: OffscreenCanvas;
     private ctx: OffscreenCanvasRenderingContext2D | null;
 

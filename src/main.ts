@@ -1,6 +1,6 @@
 import './style.css'
 import './i18n' // Import i18n configuration
-import { EntropyCropper } from './entropy-crop'
+import { IDCardImageProcessor } from './image-processor'
 import { PDFProcessor } from './pdf-processor'
 import { UIController } from './ui-controller'
 
@@ -37,12 +37,12 @@ async function handlePreviewUpdate() {
         const { threshold, padding, frontRotation, backRotation } = settings
         
         // Crop images using entropy cropping
-        const croppedFront = await entropyCropper.rotateAndCropImage(frontImage, { 
+        const croppedFront = await idCardImageProcessor.rotateAndCropImage(frontImage, { 
             threshold, 
             padding, 
             rotation: frontRotation 
         })
-        const croppedBack = await entropyCropper.rotateAndCropImage(backImage, { 
+        const croppedBack = await idCardImageProcessor.rotateAndCropImage(backImage, { 
             threshold, 
             padding, 
             rotation: backRotation })
@@ -88,7 +88,7 @@ async function handleGeneratePDF() {
 
 // Initialize the application
 const ui = new UIController()
-const entropyCropper = new EntropyCropper()
+const idCardImageProcessor = new IDCardImageProcessor()
 const pdfProcessor = new PDFProcessor()
     
 // Set up event listeners
