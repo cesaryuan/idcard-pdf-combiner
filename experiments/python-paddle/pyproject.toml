@@ -1,0 +1,13 @@
+[project]
+name = "crop-entropy-ts"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "paddlepaddle==3.0.0rc0",
+    "paddlex==3.0rc0",
+    "setuptools>=78.1.0",
+]
+
+[[tool.uv.index]]
+url = "https://mirrors.bfsu.edu.cn/pypi/web/simple"
+default = true
