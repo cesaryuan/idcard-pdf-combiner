@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 export default defineConfig({
     optimizeDeps: {
-        exclude: ["mupdf"],
+        exclude: ["mupdf", "onnxruntime-web"],
         esbuildOptions: {
             target: "esnext",
         },
