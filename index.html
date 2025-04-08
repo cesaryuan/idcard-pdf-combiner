@@ -70,7 +70,10 @@
 
         <main class="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto">
             <div class="mb-6">
-                <h2 class="text-xl font-semibold mb-4" data-i18n="upload_title">Upload PDF</h2>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold" data-i18n="upload_title">Upload PDF</h2>
+                    <div id="uploadStatus" class="text-sm hidden"></div>
+                </div>
                 <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center" id="dropzone">
                     <input type="file" id="pdfInput" accept=".pdf" class="hidden">
                     <label for="pdfInput" class="cursor-pointer">
@@ -81,7 +84,6 @@
                         <p class="mt-1 text-xs text-gray-500" data-i18n="upload_description">PDF with ID card front and back (2 pages)</p>
                     </label>
                 </div>
-                <div id="uploadStatus" class="mt-2 text-sm hidden"></div>
             </div>
 
             <details class="mb-6 bg-white rounded-md settings-panel overflow-hidden">
