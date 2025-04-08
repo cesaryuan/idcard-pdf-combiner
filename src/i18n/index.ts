@@ -63,13 +63,13 @@ const resources = {
   zh: {
     translation: {
       // Header
-      "app_title": "身份证PDF合并器",
-      "app_description": "将身份证正反面PDF页面合并成单个文档",
+      "app_title": "身份证 PDF 合并器",
+      "app_description": "将身份证正反面 PDF 页面合并成单个文档",
       
       // Upload section
-      "upload_title": "上传PDF",
+      "upload_title": "上传 PDF",
       "upload_instructions": "点击上传或拖放文件",
-      "upload_description": "包含身份证正反面的PDF（2页）",
+      "upload_description": "包含身份证正反面的 PDF（2 页）",
       
       // Settings section
       "settings_title": "设置",
@@ -97,24 +97,24 @@ const resources = {
       "front_preview_title": "正面身份证（已裁剪）",
       "back_preview_title": "背面身份证（已裁剪）",
       "combined_preview_title": "合并输出预览",
-      "preview_placeholder": "上传PDF以预览",
-      "combined_preview_placeholder": "上传PDF以预览合并输出",
+      "preview_placeholder": "上传 PDF 以预览",
+      "combined_preview_placeholder": "上传 PDF 以预览合并输出",
       
       // Buttons
-      "generate_button": "生成PDF",
-      "download_button": "下载PDF",
+      "generate_button": "生成 PDF",
+      "download_button": "下载 PDF",
       
       // Status messages
       "status_loading": "加载模型中，请耐心等待...",
       "status_ready": "模型加载完成，可以使用啦！",
-      "status_loading_pdf": "正在加载PDF...",
-      "status_pdf_processed": "PDF处理成功。",
-      "status_failed_process": "处理PDF失败：{{error}}",
+      "status_loading_pdf": "正在加载 PDF...",
+      "status_pdf_processed": "PDF 处理成功。",
+      "status_failed_process": "处理 PDF 失败：{{error}}",
       "status_failed_preview": "更新预览失败。",
-      "status_generating_pdf": "正在生成PDF...",
-      "status_pdf_generated": "PDF生成成功。",
-      "status_failed_generate": "生成PDF失败：{{error}}",
-      "status_upload_pdf": "请上传PDF文件。"
+      "status_generating_pdf": "正在生成 PDF...",
+      "status_pdf_generated": "PDF 生成成功。",
+      "status_failed_generate": "生成 PDF 失败：{{error}}",
+      "status_upload_pdf": "请上传 PDF 文件。"
     }
   }
 };
