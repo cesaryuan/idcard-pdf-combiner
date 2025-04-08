@@ -8,8 +8,8 @@ export async function getImageFromBlob(blob: Blob) {
 }
 
 // show image in dialog
-export async function showImage(image: Uint8Array) {
-    const blob = new Blob([image], { type: 'image/jpeg' });
+export async function showImage(image: ImageWithDPI) {
+    const blob = new Blob([image.blob], { type: 'image/jpeg' });
     const url = URL.createObjectURL(blob);
     const dialog = document.createElement('dialog');
     dialog.style.maxWidth = '90%';
@@ -34,6 +34,58 @@ export async function showImage(image: Uint8Array) {
             URL.revokeObjectURL(url);
             dialog.remove();
         });
+    }
+}
+
+export async function resizeShortSide(image: ImageWithDPI, shortSide: number): Promise<ImageWithDPI> {
+    const scale = shortSide / Math.min(image.width, image.height);
+    const scaledWidth = Math.round(image.width * scale);
+    const scaledHeight = Math.round(image.height * scale);
+    const canvas = new OffscreenCanvas(scaledWidth, scaledHeight);
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+        throw new Error('Failed to create canvas context');
+    }
+    ctx.drawImage(await createImageBitmap(image.blob), 0, 0, canvas.width, canvas.height);
+    return {
+        blob: await canvas.convertToBlob(),
+        width: scaledWidth,
+        height: scaledHeight,
+        dpi: image.dpi * scale
+    }
+}
+
+export async function cropImage(image: ImageWithDPI, size: number): Promise<ImageWithDPI> {
+    const canvas = new OffscreenCanvas(size, size);
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+        throw new Error('Failed to create canvas context');
+    }
+    const centerX = image.width / 2;
+    const centerY = image.height / 2;
+    const startX = centerX - size / 2;
+    const startY = centerY - size / 2;
+    ctx.drawImage(await createImageBitmap(image.blob), startX, startY, size, size);
+    return {
+        blob: await canvas.convertToBlob(),
+        width: size,
+        height: size,
+        dpi: image.dpi
+    }
+}
+
+export async function loadImage(url: string): Promise<ImageWithDPI> {
+    const image = new Image();
+    image.src = url;
+    await new Promise<void>((resolve, reject) => {
+        image.onload = () => resolve();
+        image.onerror = reject;
+    });
+    return {
+        blob: await fetch(url).then(res => res.blob()),
+        width: image.width,
+        height: image.height,
+        dpi: 96
     }
 }
 

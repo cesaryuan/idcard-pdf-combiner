@@ -3,7 +3,7 @@
  * Handles PDF loading, image extraction, and PDF generation
  */
 
-import { PDFDocument, PDFPage, Image } from "mupdf/mupdfjs"
+import { PDFDocument, PDFPage, Image, Rect, Matrix } from "mupdf/mupdfjs"
 import { Finally } from "./utils";
 
 async function getImagesByMupdf(buffer: ArrayBuffer) {
@@ -16,29 +16,25 @@ async function getImagesByMupdf(buffer: ArrayBuffer) {
     const backPage = pdfDoc.loadPage(1);
     using _frontPage = new Finally(() => frontPage.destroy());
     using _backPage = new Finally(() => backPage.destroy());
-    let imagesInFrontPage = frontPage.getImages().map(async (image) => {
+    const mapFunc = async (image: { bbox: Rect; matrix: Matrix; image: Image; }): Promise<ImageWithDPI> => {
+        // First, get the transformed bbox of the up edge of the image
+        let imageWidthBbox = Rect.transform([0, 0, 1, 0], image.matrix);
+        // Then, the actual length of the up edge of the image can be calculated by the transformed bbox
+        let imageWidthLength = Math.sqrt((imageWidthBbox[0] - imageWidthBbox[2]) ** 2 + (imageWidthBbox[1] - imageWidthBbox[3]) ** 2);
+        // Finally, the dpi can be calculated.
+        const dpi = image.image.getWidth() / imageWidthLength * 72;
         var pixmap = image.image.toPixmap();
         using _pixmap = new Finally(() => pixmap.destroy());
-        let raster = pixmap.asPNG();
         let imageResult: ImageWithDPI = {
-            blob: new Blob([raster], { type: 'image/png' }), 
-            dpi: image.image.getWidth() / (image.bbox[2] - image.bbox[0]) * 72,
+            blob: new Blob([pixmap.asPNG()], { type: 'image/png' }),
+            dpi: dpi,
             width: image.image.getWidth(),
             height: image.image.getHeight()
         };
         return imageResult;
-    });
-    let imagesInBackPage = backPage.getImages().map(async (image) => {
-        var pixmap = image.image.toPixmap();
-        let raster = pixmap.asPNG();
-        let imageResult: ImageWithDPI = {
-            blob: new Blob([raster], { type: 'image/png' }), 
-            dpi: image.image.getWidth() / (image.bbox[2] - image.bbox[0]) * 72,
-            width: image.image.getWidth(),
-            height: image.image.getHeight()
-        };
-        return imageResult;
-    });
+    };
+    let imagesInFrontPage = frontPage.getImages().map(mapFunc);
+    let imagesInBackPage = backPage.getImages().map(mapFunc);
     return {
         frontImage: await imagesInFrontPage[0],
         backImage: await imagesInBackPage[0]

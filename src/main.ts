@@ -90,6 +90,8 @@ async function handleGeneratePDF() {
 const ui = new UIController()
 const idCardImageProcessor = new IDCardImageProcessor()
 const pdfProcessor = new PDFProcessor()
+
+await idCardImageProcessor.init();
     
 // Set up event listeners
 ui.setupEventListeners(
