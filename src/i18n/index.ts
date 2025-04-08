@@ -105,7 +105,7 @@ const resources = {
       "download_button": "下载PDF",
       
       // Status messages
-      "status_loading": "初次使用需要加载模型，请耐心等待...",
+      "status_loading": "加载模型中，请耐心等待...",
       "status_ready": "模型加载完成，可以使用啦！",
       "status_loading_pdf": "正在加载PDF...",
       "status_pdf_processed": "PDF处理成功。",
