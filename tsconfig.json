@@ -20,10 +20,10 @@
     "noFallthroughCasesInSwitch": true,
 
     /* Paths */
-    "baseUrl": "./src",
-    "paths": {
-      "*": ["*"]
-    }
+    // "baseUrl": "./src",
+    // "paths": {
+    //   "*": ["*"]
+    // }
   },
   "include": ["src"]
 }
