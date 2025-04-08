@@ -95,12 +95,17 @@ ui.setupEventListeners(
     handleFileSelect,
     handlePreviewUpdate,
     handleGeneratePDF
-)
+);
 
-ui.showStatus(i18n.t('status_loading'), 'info', true)
-await Promise.all([
-    idCardImageProcessor.init(),
-    pdfProcessor.init()
-]);
-ui.showStatus(i18n.t('status_ready'), 'success')
+// Don't use top level await in main.ts, it will cause deadlocks
+// See: https://github.com/vitejs/vite/issues/19811
+// See: https://github.com/nodejs/node/issues/55468#issuecomment-2425582806
+(async () => {
+    ui.showStatus(i18n.t('status_loading'), 'info', true)
+    await Promise.all([
+        idCardImageProcessor.init(),
+        pdfProcessor.init()
+    ]);
+    ui.showStatus(i18n.t('status_ready'), 'success')
+})();
 
