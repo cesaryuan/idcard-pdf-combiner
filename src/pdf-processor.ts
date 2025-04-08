@@ -3,10 +3,11 @@
  * Handles PDF loading, image extraction, and PDF generation
  */
 
-import { PDFDocument, PDFPage, Image, Rect, Matrix } from "mupdf/mupdfjs"
+import type { Image, Rect, Matrix } from "mupdf/mupdfjs"
 import { Finally } from "./utils";
 
 async function getImagesByMupdf(buffer: ArrayBuffer) {
+    const { PDFDocument, Rect } = await import("mupdf/mupdfjs");
     const pdfDoc = PDFDocument.openDocument(buffer);
     using _ = new Finally(() => pdfDoc.destroy());
     if (pdfDoc.countPages() !== 2) {
@@ -47,7 +48,10 @@ export class PDFProcessor {
     private croppedFront: ImageWithDPI | null = null;
     private croppedBack: ImageWithDPI | null = null;
     private outputPdfUrl: string | null = null;
-    
+
+    async init() {
+        await import("mupdf/mupdfjs");
+    }
     
     /**
      * Process a PDF file
@@ -135,6 +139,7 @@ export class PDFProcessor {
         frontOffset: number,
         backOffset: number
     ): Promise<string> {
+        const { PDFDocument, PDFPage, Image } = await import("mupdf/mupdfjs");
         if (!frontImage || !backImage) {
             throw new Error('Missing cropped images.');
         }

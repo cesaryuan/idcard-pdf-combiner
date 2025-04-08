@@ -48,6 +48,8 @@ const resources = {
       "download_button": "Download PDF",
       
       // Status messages
+      "status_loading": "First use requires loading the model, please be patient...",
+      "status_ready": "Model loaded, ready to use!",
       "status_loading_pdf": "Loading PDF...",
       "status_pdf_processed": "PDF processed successfully.",
       "status_failed_process": "Failed to process PDF: {{error}}",
@@ -55,7 +57,7 @@ const resources = {
       "status_generating_pdf": "Generating PDF...",
       "status_pdf_generated": "PDF generated successfully.",
       "status_failed_generate": "Failed to generate PDF: {{error}}",
-      "status_upload_pdf": "Please upload a PDF file."
+      "status_upload_pdf": "Please upload a PDF file.",
     }
   },
   zh: {
@@ -103,6 +105,8 @@ const resources = {
       "download_button": "下载PDF",
       
       // Status messages
+      "status_loading": "初次使用需要加载模型，请耐心等待...",
+      "status_ready": "模型加载完成，可以使用啦！",
       "status_loading_pdf": "正在加载PDF...",
       "status_pdf_processed": "PDF处理成功。",
       "status_failed_process": "处理PDF失败：{{error}}",

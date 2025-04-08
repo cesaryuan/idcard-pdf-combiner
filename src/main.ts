@@ -1,5 +1,5 @@
 import './style.css'
-import './i18n' // Import i18n configuration
+import i18n from './i18n'
 import { IDCardImageProcessor } from './image-processor'
 import { PDFProcessor } from './pdf-processor'
 import { UIController } from './ui-controller'
@@ -90,12 +90,17 @@ async function handleGeneratePDF() {
 const ui = new UIController()
 const idCardImageProcessor = new IDCardImageProcessor()
 const pdfProcessor = new PDFProcessor()
-
-await idCardImageProcessor.init();
-    
 // Set up event listeners
 ui.setupEventListeners(
     handleFileSelect,
     handlePreviewUpdate,
     handleGeneratePDF
 )
+
+ui.showStatus(i18n.t('status_loading'), 'info', true)
+await Promise.all([
+    idCardImageProcessor.init(),
+    pdfProcessor.init()
+]);
+ui.showStatus(i18n.t('status_ready'), 'success')
+
