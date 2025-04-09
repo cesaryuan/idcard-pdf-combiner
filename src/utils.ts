@@ -17,7 +17,7 @@ export async function showImage(image: ImageWithDPI) {
     dialog.innerHTML = `
         <div style="position: relative;">
             <button style="position: absolute; top: 5px; right: 5px; background: #f44336; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-weight: bold;">×</button>
-            <img src="${url}" style="max-width: 100%; max-height: 70vh; display: block;" />
+            <img src="${url}" style="max-width: 100%; max-height: 70vh; display: block; background-color: black;" />
         </div>
     `;
     document.body.appendChild(dialog);
