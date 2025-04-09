@@ -213,7 +213,8 @@ export class IDCardImageProcessor {
         if (!this.ctx) {
             throw new Error('Failed to create canvas context');
         }
-        this.ctx.clearRect(0, 0, newWidth, newHeight);
+        this.ctx.fillStyle = 'white';
+        this.ctx.fillRect(0, 0, newWidth, newHeight);
         this.ctx.save();
         this.ctx.translate(newWidth / 2, newHeight / 2);
         this.ctx.rotate(rotation * Math.PI / 180);
