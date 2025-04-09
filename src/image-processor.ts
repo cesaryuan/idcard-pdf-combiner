@@ -108,6 +108,52 @@ export class IDCardImageProcessor {
     }
 
     /**
+     * Optimized entropy calculation method, suitable for large images
+     * @param {ImageData} imageData - The image data to analyze
+     * @param {Object} options - The calculation options
+     * @param {number} options.sampleRate - The sample rate, the larger the value, the less sampling, default is 1 (no downsampling)
+     * @return {number} - The calculated entropy value
+     */
+    calculateEntropyOptimized(imageData: ImageData, { sampleRate = 1 }: { sampleRate?: number } = {}): number {
+        const data = imageData.data;
+        const width = imageData.width;
+        const height = imageData.height;
+        
+        // Use TypedArray to improve performance
+        const histogramGray = new Uint32Array(256);
+        let processedPixels = 0;
+        
+        // Downsampling for large images
+        if (sampleRate < 1 || sampleRate % 1 !== 0) {
+            throw new Error('sampleRate must be a positive integer greater than 0');
+        }
+
+        // Downsampling for large images
+        for (let y = 0; y < height; y += sampleRate) {
+            for (let x = 0; x < width; x += sampleRate) {
+                const i = (y * width + x) * 4;
+                if (i < data.length) {
+                    // Use bitwise operation to accelerate grayscale calculation (approximately r*0.299 + g*0.587 + b*0.114)
+                    const gray = ((data[i] * 76 + data[i + 1] * 150 + data[i + 2] * 30) >> 8);
+                    histogramGray[gray]++;
+                    processedPixels++;
+                }
+            }
+        }
+        
+        // Calculate entropy
+        let entropy = 0;
+        for (let i = 0; i < 256; i++) {
+            if (histogramGray[i] > 0) {
+                const probability = histogramGray[i] / processedPixels;
+                entropy -= probability * Math.log2(probability);
+            }
+        }
+        
+        return entropy;
+    }
+
+    /**
      * Find the optimal crop region based on entropy
      * @param image - The image to analyze
      * @param threshold - Threshold value (0-1) for determining crop boundaries
@@ -126,6 +172,10 @@ export class IDCardImageProcessor {
             this.ctx.clearRect(0, 0, width, height);
             this.ctx.drawImage(await window.createImageBitmap(image.blob), 0, 0, width, height);
 
+            // For large images, use optimized entropy calculation
+            const useOptimized = width * height > 4000000; // User optimized entropy calculation for large images
+            const sampleRate = Math.max(1, Math.floor(Math.sqrt(width * height) / 1000)); // Adaptive sample rate
+            
             // Calculate entropy for rows and columns
             const rowEntropy = new Array(height).fill(0);
             const colEntropy = new Array(width).fill(0);
@@ -133,13 +183,17 @@ export class IDCardImageProcessor {
             // Calculate entropy for each row
             for (let y = 0; y < height; y++) {
                 const rowData = this.ctx.getImageData(0, y, width, 1);
-                rowEntropy[y] = this.calculateEntropy(rowData);
+                rowEntropy[y] = useOptimized ? 
+                    this.calculateEntropyOptimized(rowData, { sampleRate }) : 
+                    this.calculateEntropy(rowData);
             }
 
             // Calculate entropy for each column
             for (let x = 0; x < width; x++) {
                 const colData = this.ctx.getImageData(x, 0, 1, height);
-                colEntropy[x] = this.calculateEntropy(colData);
+                colEntropy[x] = useOptimized ? 
+                    this.calculateEntropyOptimized(colData, { sampleRate }) : 
+                    this.calculateEntropy(colData);
             }
 
             // Normalize entropy values
