@@ -365,6 +365,7 @@ export class UIController {
         document.body.removeChild(link);
     }
     
+    private lastStatusTime: NodeJS.Timeout | null = null;
     /**
      * Show a status message to the user
      * @param {string} message - The message to display
@@ -372,6 +373,9 @@ export class UIController {
      * @param {boolean} isLoading - Whether this is a loading message
      */
     showStatus(message: string, type: StatusType = 'info', isLoading: boolean = false): void {
+        if (this.lastStatusTime) {
+            clearTimeout(this.lastStatusTime);
+        }
         // Translate status messages if they match keys
         let translatedMessage = message;
         
@@ -415,7 +419,7 @@ export class UIController {
         
         // Hide the status after a delay for success messages
         if (type === 'success') {
-            setTimeout(() => {
+            this.lastStatusTime = setTimeout(() => {
                 if (this.uploadStatus) {
                     this.uploadStatus.classList.add('hidden');
                 }

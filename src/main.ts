@@ -13,7 +13,7 @@ async function handleFileSelect(file: File) {
     
     try {
         await pdfProcessor.extractImagesFromPdf(file);
-        ui.showStatus('PDF processed successfully.', 'success')
+        // ui.showStatus('PDF processed successfully.', 'success')
         ui.enableGenerateButton()
         await handlePreviewUpdate()
     } catch (error) {
@@ -37,11 +37,13 @@ async function handlePreviewUpdate() {
         const { threshold, padding, frontRotation, backRotation } = settings
         
         // Crop images using entropy cropping
+        ui.showStatus(i18n.t('status_cropping_images_front'), 'info', true)
         const croppedFront = await idCardImageProcessor.rotateAndCropImage(frontImage, { 
             threshold, 
             padding, 
             rotation: frontRotation 
         })
+        ui.showStatus(i18n.t('status_cropping_images_back'), 'info', true)
         const croppedBack = await idCardImageProcessor.rotateAndCropImage(backImage, { 
             threshold, 
             padding, 
@@ -51,8 +53,10 @@ async function handlePreviewUpdate() {
         pdfProcessor.setCroppedImages(croppedFront, croppedBack)
         
         // Update UI with cropped images
+        ui.showStatus(i18n.t('status_updating_image_previews'), 'info', true)
         ui.updateImagePreviews(croppedFront, croppedBack)
         ui.updateCombinedPreview(croppedFront, croppedBack, settings.frontOffset, settings.backOffset)
+        ui.showStatus(i18n.t('status_finished'), 'success')
     } catch (error) {
         console.error('Error updating preview:', error)
         ui.showStatus('Failed to update preview.', 'error')
