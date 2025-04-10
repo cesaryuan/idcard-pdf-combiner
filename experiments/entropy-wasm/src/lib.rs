@@ -1,7 +1,7 @@
 use wasm_bindgen::prelude::*;
 use web_sys::ImageData;
 
-// 导入JavaScript的Web API函数，用于控制台日志
+// 导入 JavaScript 的 Web API 函数，用于控制台日志
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(js_namespace = console)]
@@ -15,7 +15,7 @@ macro_rules! console_log {
 
 /// 计算图像熵值
 /// 
-/// 接收一个ImageData对象，计算并返回熵值
+/// 接收一个 ImageData 对象，计算并返回熵值
 #[wasm_bindgen]
 pub fn calculate_entropy(image_data: &ImageData) -> f64 {
     let width = image_data.width() as usize;
@@ -53,7 +53,7 @@ pub fn calculate_entropy(image_data: &ImageData) -> f64 {
 
 /// 使用降采样技术计算图像熵值
 /// 
-/// 接收ImageData和采样率参数，以加速大图像的熵计算
+/// 接收 ImageData 和采样率参数，以加速大图像的熵计算
 #[wasm_bindgen]
 pub fn calculate_entropy_downsampled(image_data: &ImageData, sample_rate: u32) -> f64 {
     let width = image_data.width() as usize;
@@ -100,16 +100,16 @@ pub fn calculate_entropy_downsampled(image_data: &ImageData, sample_rate: u32) -
 /// 初始化函数
 #[wasm_bindgen(start)]
 pub fn start() {
-    // 在导入的JavaScript对象上设置panic hook
+    // 在导入的 JavaScript 对象上设置 panic hook
     std::panic::set_hook(Box::new(console_error_panic_hook::hook));
     console_log!("WASM Entropy Module initialized!");
 }
 
-// 错误处理函数，将Rust panic转换为JavaScript错误
+// 错误处理函数，将 Rust panic 转换为 JavaScript 错误
 #[wasm_bindgen]
 pub fn init_panic_hook() {
     console_error_panic_hook::set_once();
 }
 
-// 添加控制台错误panic hook依赖
+// 添加控制台错误 panic hook 依赖
 extern crate console_error_panic_hook; 
