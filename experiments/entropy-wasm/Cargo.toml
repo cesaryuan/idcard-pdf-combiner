@@ -1,0 +1,23 @@
+[package]
+name = "entropy-wasm"
+version = "0.1.0"
+edition = "2021"
+description = "WebAssembly implementation of image entropy calculation"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen = "0.2.90"
+js-sys = "0.3.67"
+web-sys = { version = "0.3.67", features = ["ImageData"] }
+console_error_panic_hook = "0.1.7"
+
+[profile.release]
+# 优化编译选项，减小wasm大小
+opt-level = "s"  # 尺寸优化
+lto = true       # 链接时优化
+codegen-units = 1 # 单一代码生成单元，以便更好的优化
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3.40"
