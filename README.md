@@ -1,6 +1,8 @@
 # 二合一 ID 卡 PDF 生成网页
 
-一个二合一 ID 卡 PDF 生成网页，主要用于将从扫描仪得到的身份证正反面分两页 PDF 文件合并成一页。使用 TypeScript 和 Vite 构建。
+一个二合一 ID 卡 PDF 生成网页，主要用于将从扫描仪得到的身份证正反面分两页 PDF 文件合并成一页。使用 TypeScript 和 Vite 构建。Demo: https://idcard.cesaryuan.top/
+
+您的数据不会被存储和上传，所有处理都在您的浏览器中完成。
 
 ## 功能特点
 
